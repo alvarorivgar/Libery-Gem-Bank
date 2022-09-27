@@ -2,13 +2,18 @@ package com.alvarorivas.finalproject.model.accounts;
 
 import com.alvarorivas.finalproject.model.users.AccountHolder;
 
+import javax.persistence.Embedded;
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.Optional;
 
 public class CreditCard extends Account{
 
-    private Integer creditLimit;
+    @Embedded
+    @NotNull
+    private Money creditLimit;
+
+    @NotNull
     private BigDecimal interestRate;
 
     public CreditCard() {
@@ -16,26 +21,26 @@ public class CreditCard extends Account{
     }
 
     //Constructor without secondary owner
-    public CreditCard(Integer accountId, BigDecimal balance, AccountHolder primaryOwner, BigDecimal penaltyFee, Date creationDate, Status status,
-                      Integer creditLimit, BigDecimal interestRate) {
-        super(accountId, balance, primaryOwner, penaltyFee, creationDate, status);
+    public CreditCard(Money balance, AccountHolder primaryOwner, Money penaltyFee, Date creationDate, Status status,
+                      Money creditLimit, BigDecimal interestRate) {
+        super(balance, primaryOwner, penaltyFee, creationDate, status);
         this.creditLimit = creditLimit;
         this.interestRate = interestRate;
     }
 
     //Constructor with secondary owner
-    public CreditCard(Integer accountId, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal penaltyFee, Date creationDate,
-                      Status status, Integer creditLimit, BigDecimal interestRate) {
-        super(accountId, balance, primaryOwner, secondaryOwner, penaltyFee, creationDate, status);
+    public CreditCard(Integer accountId, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Money penaltyFee, Date creationDate,
+                      Status status, Money creditLimit, BigDecimal interestRate) {
+        super(balance, primaryOwner, secondaryOwner, penaltyFee, creationDate, status);
         this.creditLimit = creditLimit;
         this.interestRate = interestRate;
     }
 
-    public Integer getCreditLimit() {
+    public Money getCreditLimit() {
         return creditLimit;
     }
 
-    public void setCreditLimit(Integer creditLimit) {
+    public void setCreditLimit(Money creditLimit) {
         this.creditLimit = creditLimit;
     }
 

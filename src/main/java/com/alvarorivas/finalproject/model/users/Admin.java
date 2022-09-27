@@ -1,6 +1,7 @@
 package com.alvarorivas.finalproject.model.users;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "admin")
@@ -8,7 +9,10 @@ public class Admin {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull
     private Integer id;
+
+    @NotNull
     private String name;
 
     public Admin() {

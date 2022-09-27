@@ -2,12 +2,8 @@ package com.alvarorivas.finalproject.model.accounts;
 
 import com.alvarorivas.finalproject.model.users.AccountHolder;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
-import java.math.BigDecimal;
-import java.util.Calendar;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @MappedSuperclass
@@ -15,20 +11,38 @@ public abstract class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull
     private Integer accountId;
-    private BigDecimal balance;
+
+    @Embedded
+    @NotNull
+    private Money balance;
+
+    @OneToOne
+    @JoinColumn(name = "account_holder_id")
+    @NotNull
     private AccountHolder primaryOwner;
+
+    @OneToOne
+    @JoinColumn(name = "account_holder_id")
     private AccountHolder secondaryOwner;
-    private BigDecimal penaltyFee;
+
+    @Embedded
+    @NotNull
+    private Money penaltyFee;
+
+    @NotNull
     private Date creationDate;
+
+    @NotNull
     private Status status;
+
 
     public Account() {
     }
 
     //Constructor without secondary owner
-    public Account(Integer accountId, BigDecimal balance, AccountHolder primaryOwner, BigDecimal penaltyFee, Date creationDate, Status status) {
-        this.accountId = accountId;
+    public Account(Money balance, AccountHolder primaryOwner, Money penaltyFee, Date creationDate, Status status) {
         this.balance = balance;
         this.primaryOwner = primaryOwner;
         this.penaltyFee = penaltyFee;
@@ -37,8 +51,7 @@ public abstract class Account {
     }
 
     //Constructor with secondary owner
-    public Account(Integer accountId, BigDecimal balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, BigDecimal penaltyFee, Date creationDate, Status status) {
-        this.accountId = accountId;
+    public Account(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Money penaltyFee, Date creationDate, Status status) {
         this.balance = balance;
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;
@@ -51,11 +64,11 @@ public abstract class Account {
         return accountId;
     }
 
-    public BigDecimal getBalance() {
+    public Money getBalance() {
         return balance;
     }
 
-    public void setBalance(BigDecimal balance) {
+    public void setBalance(Money balance) {
         this.balance = balance;
     }
 
@@ -75,11 +88,11 @@ public abstract class Account {
         this.secondaryOwner = secondaryOwner;
     }
 
-    public BigDecimal getPenaltyFee() {
+    public Money getPenaltyFee() {
         return penaltyFee;
     }
 
-    public void setPenaltyFee(BigDecimal penaltyFee) {
+    public void setPenaltyFee(Money penaltyFee) {
         this.penaltyFee = penaltyFee;
     }
 
