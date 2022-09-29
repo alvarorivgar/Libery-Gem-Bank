@@ -1,6 +1,7 @@
 package com.alvarorivas.finalproject.model.users;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -12,7 +13,7 @@ public class Admin {
     @NotNull
     private Integer id;
 
-    @NotNull
+    @NotBlank
     private String name;
 
     public Admin() {

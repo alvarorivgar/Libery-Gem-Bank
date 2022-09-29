@@ -1,4 +1,4 @@
-package com.alvarorivas.finalproject.model.users;
+package com.alvarorivas.finalproject.model.util;
 
 import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;

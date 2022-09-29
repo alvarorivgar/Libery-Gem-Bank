@@ -1,4 +1,4 @@
-package com.alvarorivas.finalproject.model.accounts;
+package com.alvarorivas.finalproject.model.util;
 
 import javax.persistence.Embeddable;
 import java.math.RoundingMode;

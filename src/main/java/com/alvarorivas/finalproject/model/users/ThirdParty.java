@@ -3,6 +3,7 @@ package com.alvarorivas.finalproject.model.users;
 import com.alvarorivas.finalproject.model.accounts.Account;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -15,10 +16,10 @@ public class ThirdParty {
     @NotNull
     private Integer id;
 
-    @NotNull
+    @NotBlank
     private String hashedKey;
 
-    @NotNull
+    @NotBlank
     private String name;
 
     public ThirdParty() {

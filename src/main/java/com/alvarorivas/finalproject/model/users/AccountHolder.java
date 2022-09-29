@@ -1,11 +1,13 @@
 package com.alvarorivas.finalproject.model.users;
 
-import com.alvarorivas.finalproject.model.accounts.Account;
+import com.alvarorivas.finalproject.model.util.Address;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
-import java.util.List;
+import javax.validation.constraints.Past;
+import java.time.LocalDate;
+import java.time.Period;
 
 @Entity
 @Table(name = "account_holder")
@@ -16,36 +18,28 @@ public class AccountHolder {
     @NotNull
     private Integer accountHolderId;
 
-    @NotNull
+    @NotBlank
     private String name;
 
-    @NotNull
-    private Date birthDate;
+    @Past(message = "Must be a date in the past")
+    private LocalDate birthDate;
+
+    private Integer age;
 
     @Embedded
-    @NotNull
+    @NotBlank
     private Address primaryAddress;
 
     @Embedded
-    @NotNull
+    @NotBlank
     private Address mailingAddress;
 
     public AccountHolder() {
     }
-
-    //Constructor without mailing address
-    public AccountHolder(Integer accountHolderId, String name, Date birthDate, Address primaryAddress) {
-        this.accountHolderId = accountHolderId;
+    public AccountHolder(String name, LocalDate birthDate, Address primaryAddress, Address mailingAddress) {
         this.name = name;
         this.birthDate = birthDate;
-        this.primaryAddress = primaryAddress;
-    }
-
-    //Constructor with mailing address
-    public AccountHolder(Integer accountHolderId, String name, Date birthDate, Address primaryAddress, Address mailingAddress) {
-        this.accountHolderId = accountHolderId;
-        this.name = name;
-        this.birthDate = birthDate;
+        this.age = Period.between(birthDate, LocalDate.now()).getYears();
         this.primaryAddress = primaryAddress;
         this.mailingAddress = mailingAddress;
     }
@@ -62,12 +56,20 @@ public class AccountHolder {
         this.name = name;
     }
 
-    public Date getBirthDate() {
+    public LocalDate getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(Date birthDate) {
+    public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
     }
 
     public Address getPrimaryAddress() {

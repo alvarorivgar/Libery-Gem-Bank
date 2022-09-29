@@ -1,39 +1,34 @@
 package com.alvarorivas.finalproject.model.accounts;
 
 import com.alvarorivas.finalproject.model.users.AccountHolder;
+import com.alvarorivas.finalproject.model.util.Money;
+import com.alvarorivas.finalproject.model.util.Status;
 
 import javax.persistence.Embedded;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 public class CreditCard extends Account{
 
     @Embedded
-    @NotNull
+    @Max(value = 100000, message = "Credit limit cannot be higher than 100,000")
     private Money creditLimit;
 
-    @NotNull
+    @DecimalMin(value = "0.1", message = "Interest rate cannot be lower than 0.1")
     private BigDecimal interestRate;
 
     public CreditCard() {
         super();
     }
 
-    //Constructor without secondary owner
-    public CreditCard(Money balance, AccountHolder primaryOwner, Money penaltyFee, Date creationDate, Status status,
-                      Money creditLimit, BigDecimal interestRate) {
-        super(balance, primaryOwner, penaltyFee, creationDate, status);
-        this.creditLimit = creditLimit;
-        this.interestRate = interestRate;
-    }
-
-    //Constructor with secondary owner
-    public CreditCard(Integer accountId, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Money penaltyFee, Date creationDate,
-                      Status status, Money creditLimit, BigDecimal interestRate) {
-        super(balance, primaryOwner, secondaryOwner, penaltyFee, creationDate, status);
-        this.creditLimit = creditLimit;
-        this.interestRate = interestRate;
+    public CreditCard(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Status status, Money creditLimit,
+                        BigDecimal interestRate) {
+        super(balance, primaryOwner, secondaryOwner, status);
+        setCreditLimit(creditLimit);
+        setInterestRate(interestRate);
     }
 
     public Money getCreditLimit() {
@@ -41,7 +36,12 @@ public class CreditCard extends Account{
     }
 
     public void setCreditLimit(Money creditLimit) {
-        this.creditLimit = creditLimit;
+
+        if(creditLimit == null){
+            creditLimit = new Money(new BigDecimal(100));
+        }else {
+            this.creditLimit = creditLimit;
+        }
     }
 
     public BigDecimal getInterestRate() {
@@ -49,6 +49,11 @@ public class CreditCard extends Account{
     }
 
     public void setInterestRate(BigDecimal interestRate) {
-        this.interestRate = interestRate;
+
+        if(interestRate == null){
+            interestRate = new BigDecimal(0.2);
+        }else {
+            this.interestRate = interestRate;
+        }
     }
 }

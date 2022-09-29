@@ -1,45 +1,42 @@
 package com.alvarorivas.finalproject.model.accounts;
 
 import com.alvarorivas.finalproject.model.users.AccountHolder;
+import com.alvarorivas.finalproject.model.util.Money;
+import com.alvarorivas.finalproject.model.util.Status;
 
 import javax.persistence.Embedded;
 import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 public class Savings extends Account{
 
     @NotNull
-    @DecimalMax("0.5")
+    @DecimalMax(value = "0.5", message = "Interest rate cannot be higher than 0.5")
     private BigDecimal interestRate;
 
-    @NotNull
+    @NotBlank
     private String secretKey;
 
     @Embedded
     @NotNull
+    @Min(value = 100, message = "Minimum balance cannot be lower than 100")
     private Money minimumBalance;
 
-    public Savings() {
-    }
 
-    //Constructor without secondary owner
-    public Savings(Money balance, AccountHolder primaryOwner, Money penaltyFee, Date creationDate, Status status,
-                   BigDecimal interestRate, String secretKey, Money minimumBalance) {
-        super(balance, primaryOwner, penaltyFee, creationDate, status);
-        this.interestRate = interestRate;
-        this.secretKey = secretKey;
-        this.minimumBalance = minimumBalance;
-    }
-
-    //Constructor with secondary owner
-    public Savings(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Money penaltyFee, Date creationDate,
+    public Savings(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner,
                    Status status, BigDecimal interestRate, String secretKey, Money minimumBalance) {
-        super(balance, primaryOwner, secondaryOwner, penaltyFee, creationDate, status);
-        this.interestRate = interestRate;
+        super(balance, primaryOwner, secondaryOwner, status);
+        setInterestRate(interestRate);
         this.secretKey = secretKey;
-        this.minimumBalance = minimumBalance;
+        setMinimumBalance(minimumBalance);
+    }
+
+    public Savings() {
+        super();
     }
 
     public BigDecimal getInterestRate() {
@@ -47,7 +44,12 @@ public class Savings extends Account{
     }
 
     public void setInterestRate(BigDecimal interestRate) {
-        this.interestRate = interestRate;
+
+        if(interestRate == null){
+            interestRate = new BigDecimal(0.0025);
+        }else {
+            this.interestRate = interestRate;
+        }
     }
 
     public String getSecretKey() {
@@ -63,6 +65,11 @@ public class Savings extends Account{
     }
 
     public void setMinimumBalance(Money minimumBalance) {
-        this.minimumBalance = minimumBalance;
+
+        if(minimumBalance == null){
+            minimumBalance = new Money(new BigDecimal(1000));
+        }else {
+            this.minimumBalance = minimumBalance;
+        }
     }
 }

@@ -1,18 +1,21 @@
 package com.alvarorivas.finalproject.model.accounts;
 
 import com.alvarorivas.finalproject.model.users.AccountHolder;
+import com.alvarorivas.finalproject.model.util.Money;
+import com.alvarorivas.finalproject.model.util.Status;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name = "checking")
 public class Checking extends Account{
 
-    @NotNull
+    @NotBlank
     private String secretKey;
 
     @Embedded
@@ -23,23 +26,11 @@ public class Checking extends Account{
     @NotNull
     private Money monthlyMaintenanceFee;
 
-
-    //Constructor without secondary owner
-    public Checking(Integer accountId, Money balance, AccountHolder primaryOwner, Money penaltyFee, Date creationDate, Status status, String secretKey,
-                    Money minimumBalance, Money monthlyMaintenanceFee) {
-        super(balance, primaryOwner, penaltyFee, creationDate, status);
+    public Checking(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Status status, String secretKey) {
+        super(balance, primaryOwner, secondaryOwner, status);
         this.secretKey = secretKey;
-        this.minimumBalance = minimumBalance;
-        this.monthlyMaintenanceFee = monthlyMaintenanceFee;
-    }
-
-    //Constructor with secondary owner
-    public Checking(Integer accountId, Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Money penaltyFee, Date creationDate,
-                    Status status, String secretKey, Money minimumBalance, Money monthlyMaintenanceFee) {
-        super(balance, primaryOwner, secondaryOwner, penaltyFee, creationDate, status);
-        this.secretKey = secretKey;
-        this.minimumBalance = minimumBalance;
-        this.monthlyMaintenanceFee = monthlyMaintenanceFee;
+        this.minimumBalance = new Money(new BigDecimal(250));
+        this.monthlyMaintenanceFee = new Money(new BigDecimal(12));
     }
 
     public Checking() {

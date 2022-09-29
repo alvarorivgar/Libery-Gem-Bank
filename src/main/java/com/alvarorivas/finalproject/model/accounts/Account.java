@@ -1,10 +1,13 @@
 package com.alvarorivas.finalproject.model.accounts;
 
 import com.alvarorivas.finalproject.model.users.AccountHolder;
+import com.alvarorivas.finalproject.model.util.Money;
+import com.alvarorivas.finalproject.model.util.Status;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @MappedSuperclass
 public abstract class Account {
@@ -18,12 +21,12 @@ public abstract class Account {
     @NotNull
     private Money balance;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "account_holder_id")
     @NotNull
     private AccountHolder primaryOwner;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "account_holder_id")
     private AccountHolder secondaryOwner;
 
@@ -31,8 +34,7 @@ public abstract class Account {
     @NotNull
     private Money penaltyFee;
 
-    @NotNull
-    private Date creationDate;
+    private LocalDate creationDate;
 
     @NotNull
     private Status status;
@@ -41,25 +43,14 @@ public abstract class Account {
     public Account() {
     }
 
-    //Constructor without secondary owner
-    public Account(Money balance, AccountHolder primaryOwner, Money penaltyFee, Date creationDate, Status status) {
-        this.balance = balance;
-        this.primaryOwner = primaryOwner;
-        this.penaltyFee = penaltyFee;
-        this.creationDate = creationDate;
-        this.status = status;
-    }
-
-    //Constructor with secondary owner
-    public Account(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Money penaltyFee, Date creationDate, Status status) {
+    public Account(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Status status) {
         this.balance = balance;
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;
-        this.penaltyFee = penaltyFee;
-        this.creationDate = creationDate;
+        this.penaltyFee = new Money(new BigDecimal(40));
+        this.creationDate = LocalDate.now();
         this.status = status;
     }
-
     public Integer getAccountId() {
         return accountId;
     }
@@ -96,11 +87,11 @@ public abstract class Account {
         this.penaltyFee = penaltyFee;
     }
 
-    public Date getCreationDate() {
+    public LocalDate getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Date creationDate) {
+    public void setCreationDate(LocalDate creationDate) {
         this.creationDate = creationDate;
     }
 
