@@ -4,15 +4,19 @@ import com.alvarorivas.finalproject.model.users.AccountHolder;
 import com.alvarorivas.finalproject.model.util.Money;
 import com.alvarorivas.finalproject.model.util.Status;
 
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "checking")
+@AttributeOverrides({
+        @AttributeOverride(name = "minimumBalance.amount", column = @Column(name = "min_balance_amount")),
+        @AttributeOverride(name = "monthlyMaintenanceFee.amount", column = @Column(name = "monthly_maintenance_fee_amount")),
+        @AttributeOverride(name = "minimumBalance.currency", column = @Column(name = "min_balance_currency")),
+        @AttributeOverride(name = "monthlyMaintenanceFee.currency", column = @Column(name = "monthly_maintenance_fee_currency"))
+})
 public class Checking extends Account{
 
     @NotBlank

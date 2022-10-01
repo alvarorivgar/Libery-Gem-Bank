@@ -11,6 +11,10 @@ import java.time.Period;
 
 @Entity
 @Table(name = "account_holder")
+@AttributeOverrides({
+        @AttributeOverride(name = "primaryAddress.address", column = @Column(name = "primary_address")),
+        @AttributeOverride(name = "mailingAddress.address", column = @Column(name = "mailing_address"))
+})
 public class AccountHolder {
 
     @Id
@@ -24,14 +28,11 @@ public class AccountHolder {
     @Past(message = "Must be a date in the past")
     private LocalDate birthDate;
 
-    private Integer age;
-
     @Embedded
     @NotBlank
     private Address primaryAddress;
 
     @Embedded
-    @NotBlank
     private Address mailingAddress;
 
     public AccountHolder() {
@@ -39,7 +40,6 @@ public class AccountHolder {
     public AccountHolder(String name, LocalDate birthDate, Address primaryAddress, Address mailingAddress) {
         this.name = name;
         this.birthDate = birthDate;
-        this.age = Period.between(birthDate, LocalDate.now()).getYears();
         this.primaryAddress = primaryAddress;
         this.mailingAddress = mailingAddress;
     }
@@ -64,14 +64,6 @@ public class AccountHolder {
         this.birthDate = birthDate;
     }
 
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
     public Address getPrimaryAddress() {
         return primaryAddress;
     }
@@ -85,6 +77,11 @@ public class AccountHolder {
     }
 
     public void setMailingAddress(Address mailingAddress) {
-        this.mailingAddress = mailingAddress;
+
+        if(mailingAddress == null){
+            this.mailingAddress = this.primaryAddress;
+        }else {
+            this.mailingAddress = mailingAddress;
+        }
     }
 }

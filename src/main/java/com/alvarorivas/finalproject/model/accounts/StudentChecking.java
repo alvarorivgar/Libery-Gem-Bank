@@ -5,9 +5,14 @@ import com.alvarorivas.finalproject.model.util.Money;
 import com.alvarorivas.finalproject.model.util.Status;
 
 import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+
+@Entity
+@Table(name = "student_checking")
 
 public class StudentChecking extends Account{
 

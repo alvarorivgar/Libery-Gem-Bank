@@ -1,6 +1,7 @@
 package com.alvarorivas.finalproject.service.accounts;
 
 import com.alvarorivas.finalproject.model.accounts.Checking;
+import com.alvarorivas.finalproject.model.accounts.StudentChecking;
 import com.alvarorivas.finalproject.repository.accounts.CheckingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class CheckingServiceImpl implements CheckingService{
        return checkingRepository.save(checking);
    }
 
-   @Override
+    @Override
    public Checking updateAccount(Checking checking) {
        return checkingRepository.save(checking);
    }

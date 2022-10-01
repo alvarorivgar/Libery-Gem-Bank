@@ -56,7 +56,6 @@ public class Money {
         setAmount(this.amount.subtract(addAmount));
         return this.amount;
     }
-
     public Currency getCurrency() {
         return this.currency;
     }

@@ -10,6 +10,14 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @MappedSuperclass
+@AttributeOverrides({
+        @AttributeOverride(name = "penaltyFee.amount", column = @Column(name = "penalty_fee_amount")),
+        @AttributeOverride(name = "penaltyFee.currency", column = @Column(name = "penalty_fee_currency")),
+        @AttributeOverride(name = "primaryOwner.accountHolderId", column = @Column(name = "primary_holder_id")),
+        @AttributeOverride(name = "primaryOwner.primaryAddress", column = @Column(name = "primary_holder_primary_address")),
+        @AttributeOverride(name = "secondaryOwner.accountHolderId", column = @Column(name = "secondary_holder_id")),
+        @AttributeOverride(name = "secondaryOwner.primaryAddress", column = @Column(name = "secondary_holder_primary_address"))
+})
 public abstract class Account {
 
     @Id
@@ -22,12 +30,12 @@ public abstract class Account {
     private Money balance;
 
     @ManyToOne
-    @JoinColumn(name = "account_holder_id")
+    @JoinColumn(name = "primary_holder_id")
     @NotNull
     private AccountHolder primaryOwner;
 
     @ManyToOne
-    @JoinColumn(name = "account_holder_id")
+    @JoinColumn(name = "secondary_holder_id")
     private AccountHolder secondaryOwner;
 
     @Embedded

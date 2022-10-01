@@ -2,6 +2,7 @@ package com.alvarorivas.finalproject.service.accounts;
 
 
 import com.alvarorivas.finalproject.model.accounts.Checking;
+import com.alvarorivas.finalproject.model.accounts.StudentChecking;
 
 import java.util.Optional;
 

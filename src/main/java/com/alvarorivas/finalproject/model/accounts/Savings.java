@@ -4,7 +4,7 @@ import com.alvarorivas.finalproject.model.users.AccountHolder;
 import com.alvarorivas.finalproject.model.util.Money;
 import com.alvarorivas.finalproject.model.util.Status;
 
-import javax.persistence.Embedded;
+import javax.persistence.*;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
@@ -12,6 +12,12 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "savings")
+@AttributeOverrides({
+        @AttributeOverride(name = "minimumBalance.amount", column = @Column(name = "min_balance_amount")),
+        @AttributeOverride(name = "minimumBalance.currency", column = @Column(name = "min_balance_currency")),
+})
 public class Savings extends Account{
 
     @NotNull
