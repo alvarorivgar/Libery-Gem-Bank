@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "checking")
@@ -26,6 +27,8 @@ public class Checking extends Account{
     @NotNull
     private Money minimumBalance;
 
+    private LocalDate lastMaintenanceFeeApplication;
+
     @Embedded
     @NotNull
     private Money monthlyMaintenanceFee;
@@ -34,6 +37,7 @@ public class Checking extends Account{
         super(balance, primaryOwner, secondaryOwner, status);
         this.secretKey = secretKey;
         this.minimumBalance = new Money(new BigDecimal(250));
+        this.lastMaintenanceFeeApplication = LocalDate.now();
         this.monthlyMaintenanceFee = new Money(new BigDecimal(12));
     }
 
@@ -55,6 +59,14 @@ public class Checking extends Account{
 
     public void setMinimumBalance(Money minimumBalance) {
         this.minimumBalance = minimumBalance;
+    }
+
+    public LocalDate getLastMaintenanceFeeApplication() {
+        return lastMaintenanceFeeApplication;
+    }
+
+    public void setLastMaintenanceFeeApplication(LocalDate lastPenaltyApplication) {
+        this.lastMaintenanceFeeApplication = lastPenaltyApplication;
     }
 
     public Money getMonthlyMaintenanceFee() {

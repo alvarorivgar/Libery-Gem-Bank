@@ -3,9 +3,11 @@ package com.alvarorivas.finalproject.model.accounts;
 import com.alvarorivas.finalproject.model.users.AccountHolder;
 import com.alvarorivas.finalproject.model.util.Money;
 import com.alvarorivas.finalproject.model.util.Status;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PastOrPresent;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -42,6 +44,9 @@ public abstract class Account {
     @NotNull
     private Money penaltyFee;
 
+    @CreatedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    @PastOrPresent
     private LocalDate creationDate;
 
     @NotNull

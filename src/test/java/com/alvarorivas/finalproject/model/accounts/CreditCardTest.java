@@ -23,8 +23,8 @@ class CreditCardTest {
     @BeforeEach
     void setUp() {
 
-       // CreditCard card1 = new CreditCard(new Money(new BigDecimal(1000)), new AccountHolder("Perico", LocalDate.now().minusYears(20),
-         //       new Address("Su casa"), null), null, Status.ACTIVE, new Money(new BigDecimal(100000)), null);
+        CreditCard card1 = new CreditCard(new Money(new BigDecimal(1000)), new AccountHolder("Perico", LocalDate.now().minusYears(20),
+                new Address("Su casa"), null), null, Status.ACTIVE, new Money(new BigDecimal(100000)), null);
 
         CreditCard card2 = new CreditCard();
 
@@ -37,6 +37,7 @@ class CreditCardTest {
     @Test
     void setCreditLimit() {
 
+        assertEquals(new Money(new BigDecimal(100000)), card1.getCreditLimit());
     }
 
     @Test

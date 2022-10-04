@@ -1,24 +1,33 @@
 package com.alvarorivas.finalproject.service.accounts;
 
 
+import com.alvarorivas.finalproject.model.accounts.Account;
 import com.alvarorivas.finalproject.model.accounts.Checking;
 import com.alvarorivas.finalproject.model.accounts.StudentChecking;
+import com.alvarorivas.finalproject.model.users.AccountHolder;
+import com.alvarorivas.finalproject.model.util.Money;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 public interface CheckingService {
 
-    Optional<Checking> findById(Integer accountId);
+    Optional<Checking> findById(Integer id);
 
-    Checking createAccount(Checking checking);
+    Account createAccount(Checking checking);
 
-    Checking updateAccount(Checking checking); //Admins should be able to access the balance for any account and to modify it.
+    Checking updateBalance(Integer id, Money balance); //Admins should be able to access the balance for any account and to modify it.
+    Checking updateAccount(Integer id, Checking checking);
 
-    void deleteAccount(Integer accountId);
+    void deleteAccount(Integer id);
 
-   // Money checkBalance(Checking checking);
+    void checkPenaltyFee(Integer id);
 
-   // Checking transferMoney(Checking origin, AccountHolder receiverName, Integer receiverId);
+    void applyMonthlyMaintenanceFee(Integer id);
+
+    Money checkBalance(Integer id);
+
+    //Checking transferMoney(Checking origin, AccountHolder receiverName, Integer receiverId);
 
 
 }
