@@ -3,11 +3,8 @@ package com.alvarorivas.finalproject.service.accounts;
 
 import com.alvarorivas.finalproject.model.accounts.Account;
 import com.alvarorivas.finalproject.model.accounts.Checking;
-import com.alvarorivas.finalproject.model.accounts.StudentChecking;
-import com.alvarorivas.finalproject.model.users.AccountHolder;
 import com.alvarorivas.finalproject.model.util.Money;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 public interface CheckingService {
@@ -23,11 +20,11 @@ public interface CheckingService {
 
     void checkPenaltyFee(Integer id);
 
-    void applyMonthlyMaintenanceFee(Integer id);
+    void applyMonthlyAndPenaltyFee(Integer id);
 
     Money checkBalance(Integer id);
 
-    //Checking transferMoney(Checking origin, AccountHolder receiverName, Integer receiverId);
+    void transferMoney(Integer originId, String receiverName, Integer receiverId, Money amount);
 
 
 }

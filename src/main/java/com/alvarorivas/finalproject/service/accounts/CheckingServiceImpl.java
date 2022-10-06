@@ -57,7 +57,7 @@ public class CheckingServiceImpl implements CheckingService{
                 storedChecking.get().setBalance(balance);
                 return checkingRepository.save(storedChecking.get());
         }else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Id not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account ID not found");
         }
     }
 
@@ -80,7 +80,7 @@ public class CheckingServiceImpl implements CheckingService{
 
                 return checkingRepository.save(storedChecking.get());
         }else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Id not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account ID not found");
         }
    }
 
@@ -92,7 +92,7 @@ public class CheckingServiceImpl implements CheckingService{
        if (storedChecking.isPresent()) {
            checkingRepository.delete(storedChecking.get());
        } else {
-           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Id not found");
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account ID not found");
        }
    }
 
@@ -102,18 +102,19 @@ public class CheckingServiceImpl implements CheckingService{
         Optional<Checking> storedChecking = checkingRepository.findById(id);
 
         if (storedChecking.isPresent()) {
+
             //Check if current balance is lower than minimum balance
             if (storedChecking.get().getBalance().getAmount().compareTo(storedChecking.get().getMinimumBalance().getAmount()) == -1) {
                 //Subtract penalty fee to balance
                 storedChecking.get().getBalance().decreaseAmount(storedChecking.get().getPenaltyFee().getAmount());
             }
         }else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Id not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account ID not found");
         }
     }
 
     @Override
-    public void applyMonthlyMaintenanceFee(Integer id) {
+    public void applyMonthlyAndPenaltyFee(Integer id) {
 
         Optional<Checking> storedChecking = checkingRepository.findById(id);
 
@@ -125,9 +126,11 @@ public class CheckingServiceImpl implements CheckingService{
                 storedChecking.get().setBalance(new Money(storedChecking.get().getBalance().decreaseAmount(storedChecking.get().getMonthlyMaintenanceFee().getAmount())));
                 //Check if balance drops below minimum and apply fee if applicable
                 checkPenaltyFee(id);
+
+                checkingRepository.save(storedChecking.get());
             }
         }else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Id not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account ID not found");
         }
     }
 
@@ -139,14 +142,41 @@ public class CheckingServiceImpl implements CheckingService{
         if (storedChecking.isPresent()) {
 
             //Applies monthly maintenance fee and penalty fee if applicable to update balance
-            applyMonthlyMaintenanceFee(id);
+            applyMonthlyAndPenaltyFee(id);
+            checkingRepository.save(storedChecking.get());
 
             return storedChecking.get().getBalance();
         }else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account Id not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account ID not found");
         }
     }
 
+    @Override
+    public void transferMoney(Integer originId, String receiverName, Integer receiverId, Money amount) {
+
+       Optional<Checking> originAccount = checkingRepository.findById(originId);
+       Optional<Checking> receiverAccount = checkingRepository.findById(receiverId);
+
+       if(originAccount.isPresent()){
+
+           if(receiverAccount.isPresent()){
+                //Check if amount to transfer is greater than origin account's current balance
+               if (amount.getAmount().compareTo(originAccount.get().getBalance().getAmount()) == -1){
+
+                   originAccount.get().getBalance().decreaseAmount(amount);
+                   receiverAccount.get().getBalance().increaseAmount(amount);
+                   checkingRepository.save(originAccount.get());
+                   checkingRepository.save(receiverAccount.get());
 
 
+               }else {
+                   throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient funds");
+                }
+           }else {
+               throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");
+             }
+       }else {
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Origin account not found");
+        }
+    }
 }
