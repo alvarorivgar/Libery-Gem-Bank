@@ -17,10 +17,6 @@ public class CheckingController {
     @Autowired
     CheckingService checkingService;
 
-    @Autowired
-    StudentCheckingService studentCheckingService;
-
-
     @GetMapping("/checking/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Checking findById(@PathVariable Integer id){

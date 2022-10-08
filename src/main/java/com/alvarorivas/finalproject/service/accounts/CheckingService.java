@@ -18,9 +18,9 @@ public interface CheckingService {
 
     void deleteAccount(Integer id);
 
-    void checkPenaltyFee(Integer id);
+    void applyPenaltyFee(Integer id);
 
-    void applyMonthlyAndPenaltyFee(Integer id);
+    void applyMonthlyMaintenanceFee(Integer id);
 
     Money checkBalance(Integer id);
 

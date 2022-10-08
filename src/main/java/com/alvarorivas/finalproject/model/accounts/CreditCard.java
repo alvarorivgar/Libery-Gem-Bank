@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Max;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "credit_card")
@@ -23,6 +24,8 @@ public class CreditCard extends Account{
     @DecimalMin(value = "0.1", message = "Interest rate cannot be lower than 0.1")
     private BigDecimal interestRate;
 
+    private LocalDate lastInterestApplication;
+
     public CreditCard() {
         super();
     }
@@ -32,6 +35,7 @@ public class CreditCard extends Account{
         super(balance, primaryOwner, secondaryOwner, status);
         setCreditLimit(creditLimit);
         setInterestRate(interestRate);
+        this.lastInterestApplication = getCreationDate().plusMonths(1).withDayOfMonth(1);
     }
 
     public Money getCreditLimit() {
@@ -58,5 +62,13 @@ public class CreditCard extends Account{
         }else {
             this.interestRate = interestRate;
         }
+    }
+
+    public LocalDate getLastInterestApplication() {
+        return lastInterestApplication;
+    }
+
+    public void setLastInterestApplication(LocalDate lastInterestApplication) {
+        this.lastInterestApplication = lastInterestApplication;
     }
 }

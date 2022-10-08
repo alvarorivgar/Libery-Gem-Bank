@@ -32,7 +32,9 @@ public class Savings extends Account{
     @Min(value = 100, message = "Minimum balance cannot be lower than 100")
     private Money minimumBalance;
 
-    private LocalDate lastMaintenanceFeeApplication;
+    private LocalDate lastInterestApplication;
+
+    private LocalDate lastFeeApplication;
 
 
     public Savings(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner,
@@ -41,7 +43,8 @@ public class Savings extends Account{
         setInterestRate(interestRate);
         this.secretKey = secretKey;
         setMinimumBalance(minimumBalance);
-        this.lastMaintenanceFeeApplication = LocalDate.now();
+        this.lastInterestApplication = getCreationDate().withMonth(1).withDayOfMonth(1);
+        this.lastFeeApplication = getCreationDate().plusMonths(1).withDayOfMonth(1);
     }
 
     public Savings() {
@@ -82,11 +85,19 @@ public class Savings extends Account{
         }
     }
 
-    public LocalDate getLastMaintenanceFeeApplication() {
-        return lastMaintenanceFeeApplication;
+    public LocalDate getLastInterestApplication() {
+        return lastInterestApplication;
     }
 
-    public void setLastMaintenanceFeeApplication(LocalDate lastMaintenanceFeeApplication) {
-        this.lastMaintenanceFeeApplication = lastMaintenanceFeeApplication;
+    public void setLastInterestApplication(LocalDate lastMaintenanceFeeApplication) {
+        this.lastInterestApplication = lastMaintenanceFeeApplication;
+    }
+
+    public LocalDate getLastFeeApplication() {
+        return lastFeeApplication;
+    }
+
+    public void setLastFeeApplication(LocalDate lastFeeApplication) {
+        this.lastFeeApplication = lastFeeApplication;
     }
 }

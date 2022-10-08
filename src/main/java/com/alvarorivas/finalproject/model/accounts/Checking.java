@@ -27,7 +27,7 @@ public class Checking extends Account{
     @NotNull
     private Money minimumBalance;
 
-    private LocalDate lastMaintenanceFeeApplication;
+    private LocalDate lastFeeApplication;
 
     @Embedded
     @NotNull
@@ -37,7 +37,7 @@ public class Checking extends Account{
         super(balance, primaryOwner, secondaryOwner, status);
         this.secretKey = secretKey;
         this.minimumBalance = new Money(new BigDecimal(250));
-        this.lastMaintenanceFeeApplication = LocalDate.now();
+        this.lastFeeApplication = getCreationDate().plusMonths(1).withDayOfMonth(1);
         this.monthlyMaintenanceFee = new Money(new BigDecimal(12));
     }
 
@@ -61,12 +61,12 @@ public class Checking extends Account{
         this.minimumBalance = minimumBalance;
     }
 
-    public LocalDate getLastMaintenanceFeeApplication() {
-        return lastMaintenanceFeeApplication;
+    public LocalDate getLastFeeApplication() {
+        return lastFeeApplication;
     }
 
-    public void setLastMaintenanceFeeApplication(LocalDate lastPenaltyApplication) {
-        this.lastMaintenanceFeeApplication = lastPenaltyApplication;
+    public void setLastFeeApplication(LocalDate lastPenaltyApplication) {
+        this.lastFeeApplication = lastPenaltyApplication;
     }
 
     public Money getMonthlyMaintenanceFee() {

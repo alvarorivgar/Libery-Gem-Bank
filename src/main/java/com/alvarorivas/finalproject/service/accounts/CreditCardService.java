@@ -1,6 +1,8 @@
 package com.alvarorivas.finalproject.service.accounts;
 
 import com.alvarorivas.finalproject.model.accounts.CreditCard;
+import com.alvarorivas.finalproject.model.accounts.Savings;
+import com.alvarorivas.finalproject.model.util.Money;
 
 import java.util.Optional;
 
@@ -10,8 +12,16 @@ public interface CreditCardService {
 
     CreditCard createAccount(CreditCard creditCard);
 
-    CreditCard updateAccount(CreditCard creditCard); //Admins should be able to access the balance for any account and to modify it.
+    CreditCard updateBalance(Integer id, Money balance); //Admins should be able to access the balance for any account and to modify it.
 
-    void deleteAccount(Integer accountId);
+    CreditCard updateAccount(Integer id, CreditCard creditCard);
+
+    void deleteAccount(Integer id);
+
+    void applyInterest(Integer id);
+
+    Money checkBalance(Integer id);
+
+    void transferMoney(Integer originId, String receiverName, Integer receiverId, Money amount);
 
 }

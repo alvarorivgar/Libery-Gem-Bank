@@ -4,6 +4,7 @@ import com.alvarorivas.finalproject.model.accounts.Account;
 import com.alvarorivas.finalproject.model.accounts.Checking;
 import com.alvarorivas.finalproject.model.accounts.StudentChecking;
 import com.alvarorivas.finalproject.model.util.Money;
+import com.alvarorivas.finalproject.repository.accounts.AccountRepository;
 import com.alvarorivas.finalproject.repository.accounts.CheckingRepository;
 import com.alvarorivas.finalproject.repository.accounts.StudentCheckingRepository;
 import com.google.gson.Gson;
@@ -24,15 +25,23 @@ public class CheckingServiceImpl implements CheckingService{
    @Autowired
     StudentCheckingRepository studentCheckingRepository;
 
-   @Override
-   public Optional<Checking> findById(Integer accountId) {
+   @Autowired
+    AccountRepository accountRepository;
 
-       return checkingRepository.findById(accountId);
+   @Override
+   public Optional<Checking> findById(Integer id) {
+
+       return checkingRepository.findById(id);
    }
 
    @Override
    public Account createAccount(Checking checking) {
 
+       if(checkingRepository.findById(checking.getAccountId()).isPresent()){
+           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account already exists");
+       }
+
+       //If account owner is less than 24 years old, create a student checking account
        if(checking.getPrimaryOwner().getBirthDate().isAfter(LocalDate.now().minusYears(24))){
 
            Gson gson = new Gson();
@@ -97,16 +106,21 @@ public class CheckingServiceImpl implements CheckingService{
    }
 
     @Override
-    public void checkPenaltyFee(Integer id) {
+    public void applyPenaltyFee(Integer id) {
 
         Optional<Checking> storedChecking = checkingRepository.findById(id);
 
         if (storedChecking.isPresent()) {
 
-            //Check if current balance is lower than minimum balance
-            if (storedChecking.get().getBalance().getAmount().compareTo(storedChecking.get().getMinimumBalance().getAmount()) == -1) {
-                //Subtract penalty fee to balance
-                storedChecking.get().getBalance().decreaseAmount(storedChecking.get().getPenaltyFee().getAmount());
+            while(LocalDate.now().isAfter(storedChecking.get().getLastFeeApplication().plusMonths(1))){
+
+                //Check if current balance is lower than minimum balance
+                if (storedChecking.get().getBalance().getAmount().compareTo(storedChecking.get().getMinimumBalance().getAmount()) == -1) {
+                    //Subtract penalty fee to balance
+                    storedChecking.get().getBalance().decreaseAmount(storedChecking.get().getPenaltyFee());
+
+                    checkingRepository.save(storedChecking.get());
+                }
             }
         }else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Account ID not found");
@@ -114,18 +128,16 @@ public class CheckingServiceImpl implements CheckingService{
     }
 
     @Override
-    public void applyMonthlyAndPenaltyFee(Integer id) {
+    public void applyMonthlyMaintenanceFee(Integer id) {
 
         Optional<Checking> storedChecking = checkingRepository.findById(id);
 
         if (storedChecking.isPresent()) {
-            while(LocalDate.now().isAfter(storedChecking.get().getLastMaintenanceFeeApplication().plusMonths(1))){
+            while(LocalDate.now().isAfter(storedChecking.get().getLastFeeApplication().plusMonths(1))){
                 //Adds 1 month to last maintenance fee application
-                storedChecking.get().setLastMaintenanceFeeApplication(storedChecking.get().getLastMaintenanceFeeApplication().plusMonths(1));
+                storedChecking.get().setLastFeeApplication(storedChecking.get().getLastFeeApplication().plusMonths(1));
                 //Subtracts maintenance fee to balance
                 storedChecking.get().setBalance(new Money(storedChecking.get().getBalance().decreaseAmount(storedChecking.get().getMonthlyMaintenanceFee().getAmount())));
-                //Check if balance drops below minimum and apply fee if applicable
-                checkPenaltyFee(id);
 
                 checkingRepository.save(storedChecking.get());
             }
@@ -142,7 +154,9 @@ public class CheckingServiceImpl implements CheckingService{
         if (storedChecking.isPresent()) {
 
             //Applies monthly maintenance fee and penalty fee if applicable to update balance
-            applyMonthlyAndPenaltyFee(id);
+            applyPenaltyFee(id);
+            applyMonthlyMaintenanceFee(id);
+
             checkingRepository.save(storedChecking.get());
 
             return storedChecking.get().getBalance();
@@ -155,18 +169,25 @@ public class CheckingServiceImpl implements CheckingService{
     public void transferMoney(Integer originId, String receiverName, Integer receiverId, Money amount) {
 
        Optional<Checking> originAccount = checkingRepository.findById(originId);
-       Optional<Checking> receiverAccount = checkingRepository.findById(receiverId);
+       Optional<Account> receiverAccount = accountRepository.findById(receiverId);
 
        if(originAccount.isPresent()){
 
            if(receiverAccount.isPresent()){
-                //Check if amount to transfer is greater than origin account's current balance
+
+               //Check if balance is updated
+               applyPenaltyFee(originId);
+               applyMonthlyMaintenanceFee(originId);
+
+
+                //Check if amount to transfer is lower than origin account's current balance
                if (amount.getAmount().compareTo(originAccount.get().getBalance().getAmount()) == -1){
+
 
                    originAccount.get().getBalance().decreaseAmount(amount);
                    receiverAccount.get().getBalance().increaseAmount(amount);
                    checkingRepository.save(originAccount.get());
-                   checkingRepository.save(receiverAccount.get());
+                   accountRepository.save(receiverAccount.get());
 
 
                }else {
