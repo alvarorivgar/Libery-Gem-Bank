@@ -26,10 +26,10 @@ public class AccountHolderServiceImpl implements AccountHolderService{
 
         if (accountHolderRepository.findById(accountHolder.getAccountHolderId()).isPresent()){
 
-            return accountHolderRepository.save(accountHolder);
-        } else {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already exists");
         }
+
+        return accountHolderRepository.save(accountHolder);
     }
 
     @Override

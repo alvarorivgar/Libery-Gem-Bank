@@ -1,6 +1,7 @@
 package com.alvarorivas.finalproject.model.users;
 
 import com.alvarorivas.finalproject.model.util.Address;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -25,10 +26,11 @@ public class AccountHolder {
     private String name;
 
     @Past(message = "Must be a date in the past")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
     private LocalDate birthDate;
 
     @Embedded
-    @NotBlank
+    @NotNull
     private Address primaryAddress;
 
     @Embedded
