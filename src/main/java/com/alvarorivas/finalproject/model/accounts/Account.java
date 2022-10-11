@@ -22,7 +22,6 @@ public abstract class Account {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
     private Integer accountId;
 
     @Embedded
@@ -39,7 +38,6 @@ public abstract class Account {
     private AccountHolder secondaryOwner;
 
     @Embedded
-    @NotNull
     private Money penaltyFee;
 
     @PastOrPresent

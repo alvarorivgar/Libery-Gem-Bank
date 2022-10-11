@@ -1,8 +1,8 @@
 package com.alvarorivas.finalproject.model.util;
 
 import javax.persistence.Embeddable;
-import java.math.RoundingMode;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Currency;
 
 @Embeddable
@@ -60,6 +60,7 @@ public class Money {
         setAmount(this.amount.subtract(addAmount));
         return this.amount;
     }
+
     public Currency getCurrency() {
         return this.currency;
     }

@@ -4,7 +4,6 @@ import com.alvarorivas.finalproject.model.accounts.Account;
 import com.alvarorivas.finalproject.model.accounts.Checking;
 import com.alvarorivas.finalproject.model.util.Money;
 import com.alvarorivas.finalproject.service.accounts.CheckingService;
-import com.alvarorivas.finalproject.service.accounts.StudentCheckingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -59,11 +58,11 @@ public class CheckingController {
         return checkingService.checkBalance(id);
     }
 
-    @PatchMapping("/checking/{id}/transfer")
+    @PutMapping("/checking/{id}/transfer")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void transferMoney(@PathVariable(value = "id") Integer originId, @RequestParam @Valid String receiverName, @RequestParam @Valid Integer receiverId,
-                              @RequestParam @Valid Money amount){
+    public void transferMoney(@PathVariable(value = "id") Integer originId, @RequestParam String receiverName, @RequestParam @Valid Integer receiverId,
+                              @RequestBody Money quantity){
 
-        checkingService.transferMoney(originId, receiverName, receiverId, amount);
+        checkingService.transferMoney(originId, receiverName, receiverId, quantity);
     }
 }

@@ -1,6 +1,7 @@
 package com.alvarorivas.finalproject.model.users;
 
 import com.alvarorivas.finalproject.model.util.Address;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -76,11 +77,6 @@ public class AccountHolder {
     }
 
     public void setMailingAddress(Address mailingAddress) {
-
-        if(mailingAddress == null){
-            this.mailingAddress = this.primaryAddress;
-        }else {
-            this.mailingAddress = mailingAddress;
-        }
+        this.mailingAddress = mailingAddress;
     }
 }

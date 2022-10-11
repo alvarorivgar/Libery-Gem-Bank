@@ -1,12 +1,8 @@
 package com.alvarorivas.finalproject.service.accounts;
 
-import com.alvarorivas.finalproject.model.accounts.Account;
-import com.alvarorivas.finalproject.model.accounts.Checking;
-import com.alvarorivas.finalproject.model.accounts.StudentChecking;
+import com.alvarorivas.finalproject.model.accounts.*;
 import com.alvarorivas.finalproject.model.util.Money;
-import com.alvarorivas.finalproject.repository.accounts.AccountRepository;
-import com.alvarorivas.finalproject.repository.accounts.CheckingRepository;
-import com.alvarorivas.finalproject.repository.accounts.StudentCheckingRepository;
+import com.alvarorivas.finalproject.repository.accounts.*;
 import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,7 +22,10 @@ public class CheckingServiceImpl implements CheckingService{
     StudentCheckingRepository studentCheckingRepository;
 
    @Autowired
-    AccountRepository accountRepository;
+    SavingsRepository savingsRepository;
+
+   @Autowired
+    CreditCardRepository creditCardRepository;
 
    @Override
    public Optional<Checking> findById(Integer id) {
@@ -112,7 +111,10 @@ public class CheckingServiceImpl implements CheckingService{
 
         if (storedChecking.isPresent()) {
 
-            while(LocalDate.now().isAfter(storedChecking.get().getLastFeeApplication().plusMonths(1))){
+            while(LocalDate.now().isAfter(storedChecking.get().getLastPenaltyFeeCheck().plusMonths(1))){
+
+                //Adds 1 month to last penalty fee check
+                storedChecking.get().setLastPenaltyFeeCheck(storedChecking.get().getLastPenaltyFeeCheck().plusMonths(1));
 
                 //Check if current balance is lower than minimum balance
                 if (storedChecking.get().getBalance().getAmount().compareTo(storedChecking.get().getMinimumBalance().getAmount()) == -1) {
@@ -133,9 +135,9 @@ public class CheckingServiceImpl implements CheckingService{
         Optional<Checking> storedChecking = checkingRepository.findById(id);
 
         if (storedChecking.isPresent()) {
-            while(LocalDate.now().isAfter(storedChecking.get().getLastFeeApplication().plusMonths(1))){
+            while(LocalDate.now().isAfter(storedChecking.get().getLastPenaltyFeeCheck().plusMonths(1))){
                 //Adds 1 month to last maintenance fee application
-                storedChecking.get().setLastFeeApplication(storedChecking.get().getLastFeeApplication().plusMonths(1));
+                storedChecking.get().setLastMaintenanceFeeApplication(storedChecking.get().getLastMaintenanceFeeApplication().plusMonths(1));
                 //Subtracts maintenance fee to balance
                 storedChecking.get().setBalance(new Money(storedChecking.get().getBalance().decreaseAmount(storedChecking.get().getMonthlyMaintenanceFee().getAmount())));
 
@@ -165,39 +167,75 @@ public class CheckingServiceImpl implements CheckingService{
         }
     }
 
+    public Integer accountTypeChecker(Integer id) {
+
+        Optional<Checking> checking = checkingRepository.findById(id);
+        Optional<CreditCard> creditCard = creditCardRepository.findById(id);
+        Optional<Savings> savings = savingsRepository.findById(id);
+        Optional<StudentChecking> studentChecking = studentCheckingRepository.findById(id);
+
+        if (checking.isPresent()) {
+            return 1;
+        } else if (creditCard.isPresent()) {
+            return 2;
+        } else if (savings.isPresent()) {
+            return 3;
+        } else if (studentChecking.isPresent()) {
+            return 4;
+        }else {
+            return null;
+        }
+    }
+
     @Override
     public void transferMoney(Integer originId, String receiverName, Integer receiverId, Money amount) {
 
        Optional<Checking> originAccount = checkingRepository.findById(originId);
-       Optional<Account> receiverAccount = accountRepository.findById(receiverId);
 
-       if(originAccount.isPresent()){
-
-           if(receiverAccount.isPresent()){
-
-               //Check if balance is updated
-               applyPenaltyFee(originId);
-               applyMonthlyMaintenanceFee(originId);
+       Integer receiverAccount = accountTypeChecker(receiverId);
 
 
-                //Check if amount to transfer is lower than origin account's current balance
-               if (amount.getAmount().compareTo(originAccount.get().getBalance().getAmount()) == -1){
+       if(!originAccount.isPresent()){
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Origin account not found");}
+
+       if(receiverAccount == null){
+           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");
+       }
+
+       //Check if balance is updated
+       applyPenaltyFee(originId);
+       applyMonthlyMaintenanceFee(originId);
+
+       //Check if amount to transfer is lower than origin account's current balance
+        if (amount.getAmount().compareTo(originAccount.get().getBalance().getAmount()) == 1){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient funds");
+        }
 
 
-                   originAccount.get().getBalance().decreaseAmount(amount);
-                   receiverAccount.get().getBalance().increaseAmount(amount);
-                   checkingRepository.save(originAccount.get());
-                   accountRepository.save(receiverAccount.get());
+        originAccount.get().getBalance().decreaseAmount(amount);
+        checkingRepository.save(originAccount.get());
 
-
-               }else {
-                   throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient funds");
-                }
-           }else {
-               throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");
-             }
-       }else {
-           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Origin account not found");
+        switch (receiverAccount) {
+            case 1 -> {
+                           Checking receiverChecking = checkingRepository.findById(receiverId).get();
+                           receiverChecking.getBalance().increaseAmount(amount);
+                           checkingRepository.save(receiverChecking);
+            }
+            case 2 -> {
+                           CreditCard receiverCard = creditCardRepository.findById(receiverId).get();
+                           receiverCard.getBalance().increaseAmount(amount);
+                           creditCardRepository.save(receiverCard);
+            }
+            case 3 -> {
+                           Savings receiverSavings = savingsRepository.findById(receiverId).get();
+                           receiverSavings.getBalance().increaseAmount(amount);
+                           savingsRepository.save(receiverSavings);
+            }
+            case 4 -> {
+                           StudentChecking receiverStudent = studentCheckingRepository.findById(receiverId).get();
+                           receiverStudent.getBalance().increaseAmount(amount);
+                           studentCheckingRepository.save(receiverStudent);
+            }
         }
     }
 }

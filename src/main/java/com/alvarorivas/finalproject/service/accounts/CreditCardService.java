@@ -1,7 +1,6 @@
 package com.alvarorivas.finalproject.service.accounts;
 
 import com.alvarorivas.finalproject.model.accounts.CreditCard;
-import com.alvarorivas.finalproject.model.accounts.Savings;
 import com.alvarorivas.finalproject.model.util.Money;
 
 import java.util.Optional;
@@ -21,6 +20,8 @@ public interface CreditCardService {
     void applyInterest(Integer id);
 
     Money checkBalance(Integer id);
+
+    public Integer accountTypeChecker(Integer id);
 
     void transferMoney(Integer originId, String receiverName, Integer receiverId, Money amount);
 

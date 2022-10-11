@@ -24,6 +24,8 @@ public interface CheckingService {
 
     Money checkBalance(Integer id);
 
+    public Integer accountTypeChecker(Integer id);
+
     void transferMoney(Integer originId, String receiverName, Integer receiverId, Money amount);
 
 

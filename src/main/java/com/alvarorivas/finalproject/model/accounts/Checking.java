@@ -24,20 +24,21 @@ public class Checking extends Account{
     private String secretKey;
 
     @Embedded
-    @NotNull
     private Money minimumBalance;
 
-    private LocalDate lastFeeApplication;
+    private LocalDate lastPenaltyFeeCheck;
+
+    private LocalDate lastMaintenanceFeeApplication;
 
     @Embedded
-    @NotNull
     private Money monthlyMaintenanceFee;
 
     public Checking(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Status status, String secretKey) {
         super(balance, primaryOwner, secondaryOwner, status);
         this.secretKey = secretKey;
         this.minimumBalance = new Money(new BigDecimal(250));
-        this.lastFeeApplication = getCreationDate().plusMonths(1).withDayOfMonth(1);
+        this.lastPenaltyFeeCheck = getCreationDate().plusMonths(1).withDayOfMonth(1);
+        this.lastMaintenanceFeeApplication = getCreationDate().plusMonths(1).withDayOfMonth(1);
         this.monthlyMaintenanceFee = new Money(new BigDecimal(12));
     }
 
@@ -61,12 +62,12 @@ public class Checking extends Account{
         this.minimumBalance = minimumBalance;
     }
 
-    public LocalDate getLastFeeApplication() {
-        return lastFeeApplication;
+    public LocalDate getLastPenaltyFeeCheck() {
+        return lastPenaltyFeeCheck;
     }
 
-    public void setLastFeeApplication(LocalDate lastPenaltyApplication) {
-        this.lastFeeApplication = lastPenaltyApplication;
+    public void setLastPenaltyFeeCheck(LocalDate lastPenaltyApplication) {
+        this.lastPenaltyFeeCheck = lastPenaltyApplication;
     }
 
     public Money getMonthlyMaintenanceFee() {
@@ -75,5 +76,13 @@ public class Checking extends Account{
 
     public void setMonthlyMaintenanceFee(Money monthlyMaintenanceFee) {
         this.monthlyMaintenanceFee = monthlyMaintenanceFee;
+    }
+
+    public LocalDate getLastMaintenanceFeeApplication() {
+        return lastMaintenanceFeeApplication;
+    }
+
+    public void setLastMaintenanceFeeApplication(LocalDate lastMaintenanceFeeApplication) {
+        this.lastMaintenanceFeeApplication = lastMaintenanceFeeApplication;
     }
 }
