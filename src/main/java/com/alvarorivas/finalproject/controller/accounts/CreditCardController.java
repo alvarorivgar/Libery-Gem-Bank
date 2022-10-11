@@ -57,10 +57,10 @@ public class CreditCardController {
         return creditCardService.checkBalance(id);
     }
 
-    @PatchMapping("/credit-card/{id}/transfer")
+    @PutMapping("/credit-card/{id}/transfer")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void transferMoney(@PathVariable(value = "id") Integer originId, @RequestParam @Valid String receiverName, @RequestParam @Valid Integer receiverId,
-                              @RequestParam @Valid Money amount){
+    public void transferMoney(@PathVariable(value = "id") Integer originId, @RequestParam String receiverName, @RequestParam @Valid Integer receiverId,
+                              @RequestBody Money amount){
 
         creditCardService.transferMoney(originId, receiverName, receiverId, amount);
     }

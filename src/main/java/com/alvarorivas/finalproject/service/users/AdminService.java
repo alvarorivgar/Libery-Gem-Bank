@@ -2,7 +2,6 @@ package com.alvarorivas.finalproject.service.users;
 
 import com.alvarorivas.finalproject.model.users.Admin;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.util.Optional;
 
 public interface AdminService {
@@ -11,7 +10,7 @@ public interface AdminService {
 
     Admin createAdmin(Admin admin);
 
-    Admin updateAdmin(Admin admin);
+    Admin updateAdmin(Integer id, Admin admin);
 
     void deleteAdmin(Integer id);
 }

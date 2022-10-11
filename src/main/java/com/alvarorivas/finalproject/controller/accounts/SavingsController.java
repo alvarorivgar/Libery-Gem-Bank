@@ -57,10 +57,10 @@ public class SavingsController {
         return savingsService.checkBalance(id);
     }
 
-    @PatchMapping("/savings/{id}/transfer")
+    @PutMapping("/savings/{id}/transfer")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void transferMoney(@PathVariable(value = "id") Integer originId, @RequestParam @Valid String receiverName, @RequestParam @Valid Integer receiverId,
-                              @RequestParam @Valid Money amount){
+    public void transferMoney(@PathVariable(value = "id") Integer originId, @RequestParam String receiverName, @RequestParam @Valid Integer receiverId,
+                              @RequestBody Money amount){
 
         savingsService.transferMoney(originId, receiverName, receiverId, amount);
     }

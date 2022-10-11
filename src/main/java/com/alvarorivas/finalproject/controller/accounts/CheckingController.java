@@ -61,8 +61,8 @@ public class CheckingController {
     @PutMapping("/checking/{id}/transfer")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void transferMoney(@PathVariable(value = "id") Integer originId, @RequestParam String receiverName, @RequestParam @Valid Integer receiverId,
-                              @RequestBody Money quantity){
+                              @RequestBody Money amount){
 
-        checkingService.transferMoney(originId, receiverName, receiverId, quantity);
+        checkingService.transferMoney(originId, receiverName, receiverId, amount);
     }
 }

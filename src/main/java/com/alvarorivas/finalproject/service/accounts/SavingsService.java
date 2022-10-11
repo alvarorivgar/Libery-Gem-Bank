@@ -1,7 +1,5 @@
 package com.alvarorivas.finalproject.service.accounts;
 
-import com.alvarorivas.finalproject.model.accounts.Account;
-import com.alvarorivas.finalproject.model.accounts.Checking;
 import com.alvarorivas.finalproject.model.accounts.Savings;
 import com.alvarorivas.finalproject.model.util.Money;
 

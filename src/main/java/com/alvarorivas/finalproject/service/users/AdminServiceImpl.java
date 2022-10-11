@@ -3,7 +3,9 @@ package com.alvarorivas.finalproject.service.users;
 import com.alvarorivas.finalproject.model.users.Admin;
 import com.alvarorivas.finalproject.repository.users.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Optional;
 
@@ -21,16 +23,38 @@ public class AdminServiceImpl implements AdminService{
 
     @Override
     public Admin createAdmin(Admin admin) {
+
+        if(adminRepository.findById(admin.getId()).isPresent()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already exists");
+        }
+
         return adminRepository.save(admin);
     }
 
     @Override
-    public Admin updateAdmin(Admin admin) {
-        return adminRepository.save(admin);
+    public Admin updateAdmin(Integer id, Admin admin) {
+
+        Optional<Admin> storedAdmin = adminRepository.findById(id);
+
+        if(storedAdmin.isPresent()){
+
+            storedAdmin.get().setName(admin.getName());
+            return adminRepository.save(storedAdmin.get());
+        }else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User ID not found");
+        }
     }
 
     @Override
     public void deleteAdmin(Integer id) {
-        adminRepository.deleteById(id);
+
+        Optional<Admin> storedAdmin = adminRepository.findById(id);
+
+        if(storedAdmin.isPresent()){
+
+            adminRepository.deleteById(id);
+        }else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User ID not found");
+        }
     }
 }

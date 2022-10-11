@@ -1,6 +1,5 @@
 package com.alvarorivas.finalproject.controller.accounts;
 
-import com.alvarorivas.finalproject.model.accounts.Account;
 import com.alvarorivas.finalproject.model.accounts.StudentChecking;
 import com.alvarorivas.finalproject.model.util.Money;
 import com.alvarorivas.finalproject.service.accounts.StudentCheckingService;
@@ -51,10 +50,10 @@ public class StudentCheckingController {
         return studentCheckingService.checkBalance(id);
     }
 
-    @PatchMapping("/student-checking/{id}/transfer")
+    @PutMapping("/student-checking/{id}/transfer")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void transferMoney(@PathVariable(value = "id") Integer originId, @RequestParam @Valid String receiverName, @RequestParam @Valid Integer receiverId,
-                              @RequestParam @Valid Money amount){
+    public void transferMoney(@PathVariable(value = "id") Integer originId, @RequestParam String receiverName, @RequestParam @Valid Integer receiverId,
+                              @RequestBody Money amount){
 
         studentCheckingService.transferMoney(originId, receiverName, receiverId, amount);
     }

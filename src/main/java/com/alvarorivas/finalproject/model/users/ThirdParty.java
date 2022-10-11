@@ -1,11 +1,8 @@
 package com.alvarorivas.finalproject.model.users;
 
-import com.alvarorivas.finalproject.model.accounts.Account;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @Entity
 @Table(name = "third_party")
