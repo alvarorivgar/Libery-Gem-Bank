@@ -2,6 +2,7 @@ package com.alvarorivas.finalproject.model.users;
 
 import com.alvarorivas.finalproject.model.util.Address;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -19,14 +20,13 @@ public class AccountHolder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
     private Integer accountHolderId;
 
     @NotBlank
     private String name;
 
     @Past(message = "Must be a date in the past")
-    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd")
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="dd-MM-yyyy")
     private LocalDate birthDate;
 
     @Embedded

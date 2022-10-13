@@ -35,9 +35,6 @@ public class CreditCardServiceImpl implements CreditCardService{
     @Override
     public CreditCard createAccount(CreditCard creditCard) {
 
-        if(creditCardRepository.findById(creditCard.getAccountId()).isPresent()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account already exists");
-        }
         return creditCardRepository.save(creditCard);
     }
 

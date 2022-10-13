@@ -35,10 +35,6 @@ public class SavingsServiceImpl implements SavingsService{
     @Override
     public Savings createAccount(Savings savings) {
 
-        if(savingsRepository.findById(savings.getAccountId()).isPresent()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account already exists");
-        }
-
         return savingsRepository.save(savings);
     }
 

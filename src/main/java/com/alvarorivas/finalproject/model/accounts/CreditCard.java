@@ -3,6 +3,11 @@ package com.alvarorivas.finalproject.model.accounts;
 import com.alvarorivas.finalproject.model.users.AccountHolder;
 import com.alvarorivas.finalproject.model.util.Money;
 import com.alvarorivas.finalproject.model.util.Status;
+import net.bytebuddy.implementation.bind.annotation.Default;
+import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Max;
@@ -18,13 +23,12 @@ import java.time.LocalDate;
 public class CreditCard extends Account{
 
     @Embedded
-    @Max(value = 100000, message = "Credit limit cannot be higher than 100,000")
-    private Money creditLimit;
+    private Money creditLimit = new Money(new BigDecimal(100));
 
     @DecimalMin(value = "0.1", message = "Interest rate cannot be lower than 0.1")
-    private BigDecimal interestRate;
+    private BigDecimal interestRate = new BigDecimal(0.2);
 
-    private LocalDate lastInterestApplication;
+    private LocalDate lastInterestApplication = getCreationDate().plusMonths(1).withDayOfMonth(1);
 
     public CreditCard() {
         super();
@@ -35,7 +39,6 @@ public class CreditCard extends Account{
         super(balance, primaryOwner, secondaryOwner, status);
         setCreditLimit(creditLimit);
         setInterestRate(interestRate);
-        this.lastInterestApplication = getCreationDate().plusMonths(1).withDayOfMonth(1);
     }
 
     public Money getCreditLimit() {
@@ -44,11 +47,10 @@ public class CreditCard extends Account{
 
     public void setCreditLimit(Money creditLimit) {
 
-        if(creditLimit == null){
-            creditLimit = new Money(new BigDecimal(100));
-        }else {
-            this.creditLimit = creditLimit;
+        if(creditLimit.getAmount().compareTo(new BigDecimal(100000)) == 1){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Credit limit cannot exceed 100,000");
         }
+        this.creditLimit = creditLimit;
     }
 
     public BigDecimal getInterestRate() {
@@ -56,12 +58,7 @@ public class CreditCard extends Account{
     }
 
     public void setInterestRate(BigDecimal interestRate) {
-
-        if(interestRate == null){
-            interestRate = new BigDecimal(0.2);
-        }else {
-            this.interestRate = interestRate;
-        }
+        this.interestRate = interestRate;
     }
 
     public LocalDate getLastInterestApplication() {

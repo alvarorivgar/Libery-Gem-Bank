@@ -3,6 +3,8 @@ package com.alvarorivas.finalproject.model.accounts;
 import com.alvarorivas.finalproject.model.users.AccountHolder;
 import com.alvarorivas.finalproject.model.util.Money;
 import com.alvarorivas.finalproject.model.util.Status;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.persistence.*;
 import javax.validation.constraints.DecimalMax;
@@ -22,19 +24,18 @@ public class Savings extends Account{
 
     @NotNull
     @DecimalMax(value = "0.5", message = "Interest rate cannot be higher than 0.5")
-    private BigDecimal interestRate;
+    private BigDecimal interestRate = new BigDecimal(0.0025);
 
     @NotBlank
     private String secretKey;
 
     @Embedded
     @NotNull
-    @Min(value = 100, message = "Minimum balance cannot be lower than 100")
-    private Money minimumBalance;
+    private Money minimumBalance = new Money(new BigDecimal(1000));
 
-    private LocalDate lastInterestApplication;
+    private LocalDate lastInterestApplication = getCreationDate().withMonth(1).withDayOfMonth(1);
 
-    private LocalDate lastFeeApplication;
+    private LocalDate lastFeeApplication = getCreationDate().plusMonths(1).withDayOfMonth(1);
 
 
     public Savings(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner,
@@ -43,8 +44,6 @@ public class Savings extends Account{
         setInterestRate(interestRate);
         this.secretKey = secretKey;
         setMinimumBalance(minimumBalance);
-        this.lastInterestApplication = getCreationDate().withMonth(1).withDayOfMonth(1);
-        this.lastFeeApplication = getCreationDate().plusMonths(1).withDayOfMonth(1);
     }
 
     public Savings() {
@@ -57,11 +56,7 @@ public class Savings extends Account{
 
     public void setInterestRate(BigDecimal interestRate) {
 
-        if(interestRate == null){
-            interestRate = new BigDecimal(0.0025);
-        }else {
-            this.interestRate = interestRate;
-        }
+        this.interestRate = interestRate;
     }
 
     public String getSecretKey() {
@@ -78,11 +73,10 @@ public class Savings extends Account{
 
     public void setMinimumBalance(Money minimumBalance) {
 
-        if(minimumBalance == null){
-            minimumBalance = new Money(new BigDecimal(1000));
-        }else {
-            this.minimumBalance = minimumBalance;
+        if(minimumBalance.getAmount().compareTo(new BigDecimal(100)) == 1){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Minimum balance cannot be lower than 100");
         }
+        this.minimumBalance = minimumBalance;
     }
 
     public LocalDate getLastInterestApplication() {

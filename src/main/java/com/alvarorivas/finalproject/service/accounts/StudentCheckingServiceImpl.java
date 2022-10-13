@@ -33,6 +33,22 @@ public class StudentCheckingServiceImpl implements StudentCheckingService{
     }
 
     @Override
+    public StudentChecking fromChecking(Checking checking) {
+
+        StudentChecking studentChecking = new StudentChecking();
+
+        studentChecking.setBalance(checking.getBalance());
+        studentChecking.setPrimaryOwner(checking.getPrimaryOwner());
+        studentChecking.setSecondaryOwner(checking.getSecondaryOwner());
+        studentChecking.setStatus(checking.getStatus());
+        studentChecking.setSecretKey(checking.getSecretKey());
+        studentChecking.setCreationDate(checking.getCreationDate());
+        studentChecking.setPenaltyFee(checking.getPenaltyFee());
+
+        return studentCheckingRepository.save(studentChecking);
+    }
+
+    @Override
     public StudentChecking updateBalance(Integer id, Money balance) {
 
         Optional<StudentChecking> storedStudentChecking = studentCheckingRepository.findById(id);

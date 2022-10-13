@@ -10,7 +10,6 @@ public class Admin {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
     private Integer id;
 
     @NotBlank
@@ -19,8 +18,7 @@ public class Admin {
     public Admin() {
     }
 
-    public Admin(Integer id, String name) {
-        this.id = id;
+    public Admin(String name) {
         this.name = name;
     }
 

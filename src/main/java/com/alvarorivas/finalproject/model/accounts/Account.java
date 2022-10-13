@@ -25,12 +25,10 @@ public abstract class Account {
     private Integer accountId;
 
     @Embedded
-    @NotNull
     private Money balance;
 
     @ManyToOne
     @JoinColumn(name = "primary_holder_id")
-    @NotNull
     private AccountHolder primaryOwner;
 
     @ManyToOne
@@ -38,12 +36,10 @@ public abstract class Account {
     private AccountHolder secondaryOwner;
 
     @Embedded
-    private Money penaltyFee;
+    private Money penaltyFee = new Money(new BigDecimal(40));
 
-    @PastOrPresent
-    private LocalDate creationDate;
+    private LocalDate creationDate = LocalDate.now();
 
-    @NotNull
     private Status status;
 
 
@@ -54,8 +50,6 @@ public abstract class Account {
         this.balance = balance;
         this.primaryOwner = primaryOwner;
         this.secondaryOwner = secondaryOwner;
-        this.penaltyFee = new Money(new BigDecimal(40));
-        this.creationDate = LocalDate.now();
         this.status = status;
     }
     public Integer getAccountId() {

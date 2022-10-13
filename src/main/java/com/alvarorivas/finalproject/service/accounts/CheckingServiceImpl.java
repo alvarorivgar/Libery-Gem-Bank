@@ -27,6 +27,10 @@ public class CheckingServiceImpl implements CheckingService{
    @Autowired
     CreditCardRepository creditCardRepository;
 
+   @Autowired
+   StudentCheckingService studentCheckingService;
+
+
    @Override
    public Optional<Checking> findById(Integer id) {
 
@@ -36,23 +40,15 @@ public class CheckingServiceImpl implements CheckingService{
    @Override
    public Account createAccount(Checking checking) {
 
-       if(checkingRepository.findById(checking.getAccountId()).isPresent()){
-           throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account already exists");
-       }
-
        //If account owner is less than 24 years old, create a student checking account
        if(checking.getPrimaryOwner().getBirthDate().isAfter(LocalDate.now().minusYears(24))){
 
-           Gson gson = new Gson();
-           String jsonString = gson.toJson(checking);
+           return studentCheckingService.fromChecking(checking);
 
-           StudentChecking studentChecking = gson.fromJson(jsonString, StudentChecking.class);
-
-           return studentCheckingRepository.save(studentChecking);
        }else {
 
            return checkingRepository.save(checking);
-       }
+      }
    }
 
     @Override
@@ -85,6 +81,8 @@ public class CheckingServiceImpl implements CheckingService{
                 storedChecking.get().setSecondaryOwner(checking.getSecondaryOwner());
                 storedChecking.get().setMonthlyMaintenanceFee(checking.getMonthlyMaintenanceFee());
                 storedChecking.get().setSecretKey(checking.getSecretKey());
+                storedChecking.get().setLastMaintenanceFeeApplication(checking.getLastMaintenanceFeeApplication());
+                storedChecking.get().setLastPenaltyFeeCheck(checking.getLastPenaltyFeeCheck());
 
                 return checkingRepository.save(storedChecking.get());
         }else {

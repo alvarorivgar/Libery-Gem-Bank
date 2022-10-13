@@ -25,7 +25,7 @@ public class CheckingController {
 
     @PostMapping("/checking")
     @ResponseStatus(HttpStatus.CREATED)
-    public Account createAccount(@RequestBody @Valid Checking checking){
+    public Account createAccount(@RequestBody Checking checking){
 
        return checkingService.createAccount(checking);
     }

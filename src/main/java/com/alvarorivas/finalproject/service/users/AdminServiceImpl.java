@@ -24,10 +24,6 @@ public class AdminServiceImpl implements AdminService{
     @Override
     public Admin createAdmin(Admin admin) {
 
-        if(adminRepository.findById(admin.getId()).isPresent()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already exists");
-        }
-
         return adminRepository.save(admin);
     }
 

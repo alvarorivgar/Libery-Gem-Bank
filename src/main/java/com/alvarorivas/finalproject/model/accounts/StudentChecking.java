@@ -14,10 +14,9 @@ import java.time.LocalDate;
 
 public class StudentChecking extends Account{
 
-    @NotBlank
     private String secretKey;
 
-    public StudentChecking(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, LocalDate creationDate, Status status, String secretKey) {
+    public StudentChecking(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Status status, String secretKey) {
         super(balance, primaryOwner, secondaryOwner, status);
         this.secretKey = secretKey;
     }

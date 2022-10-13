@@ -45,10 +45,6 @@ public class ThirdPartyServiceImpl implements ThirdPartyService{
     @Override
     public ThirdParty createThirdParty(ThirdParty thirdParty) {
 
-        if(thirdPartyRepository.findById(thirdParty.getId()).isPresent()){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already exists");
-        }
-
         return thirdPartyRepository.save(thirdParty);
     }
 

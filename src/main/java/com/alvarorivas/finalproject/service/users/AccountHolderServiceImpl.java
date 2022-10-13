@@ -24,11 +24,6 @@ public class AccountHolderServiceImpl implements AccountHolderService{
     @Override
     public AccountHolder createAccHolder(AccountHolder accountHolder) {
 
-        if (accountHolderRepository.findById(accountHolder.getAccountHolderId()).isPresent()){
-
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User already exists");
-        }
-
         return accountHolderRepository.save(accountHolder);
     }
 

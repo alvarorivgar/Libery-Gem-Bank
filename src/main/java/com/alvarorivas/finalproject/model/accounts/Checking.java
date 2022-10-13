@@ -5,7 +5,6 @@ import com.alvarorivas.finalproject.model.util.Money;
 import com.alvarorivas.finalproject.model.util.Status;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -19,26 +18,21 @@ import java.time.LocalDate;
 })
 public class Checking extends Account{
 
-    @NotBlank
     private String secretKey;
 
     @Embedded
-    private Money minimumBalance;
+    private Money minimumBalance = new Money(new BigDecimal(250));
 
-    private LocalDate lastPenaltyFeeCheck;
+    private LocalDate lastPenaltyFeeCheck = getCreationDate().plusMonths(1).withDayOfMonth(1);
 
-    private LocalDate lastMaintenanceFeeApplication;
+    private LocalDate lastMaintenanceFeeApplication = getCreationDate().plusMonths(1).withDayOfMonth(1);
 
     @Embedded
-    private Money monthlyMaintenanceFee;
+    private Money monthlyMaintenanceFee = new Money(new BigDecimal(12));
 
     public Checking(Money balance, AccountHolder primaryOwner, AccountHolder secondaryOwner, Status status, String secretKey) {
         super(balance, primaryOwner, secondaryOwner, status);
         this.secretKey = secretKey;
-        this.minimumBalance = new Money(new BigDecimal(250));
-        this.lastPenaltyFeeCheck = getCreationDate().plusMonths(1).withDayOfMonth(1);
-        this.lastMaintenanceFeeApplication = getCreationDate().plusMonths(1).withDayOfMonth(1);
-        this.monthlyMaintenanceFee = new Money(new BigDecimal(12));
     }
 
     public Checking() {
