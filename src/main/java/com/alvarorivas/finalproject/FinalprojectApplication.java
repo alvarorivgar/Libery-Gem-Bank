@@ -1,5 +1,6 @@
 package com.alvarorivas.finalproject;
 
+import com.alvarorivas.finalproject.model.accounts.CreditCard;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -9,5 +10,4 @@ public class FinalprojectApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FinalprojectApplication.class, args);
 	}
-
 }
