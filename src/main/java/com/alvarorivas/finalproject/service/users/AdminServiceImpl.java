@@ -1,6 +1,7 @@
 package com.alvarorivas.finalproject.service.users;
 
 import com.alvarorivas.finalproject.model.users.Admin;
+import com.alvarorivas.finalproject.repository.security.UserRepository;
 import com.alvarorivas.finalproject.repository.users.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

@@ -116,6 +116,11 @@ public class ThirdPartyServiceImpl implements ThirdPartyService{
         switch (receiverAccount) {
             case 1 -> {
                 Checking receiverChecking = checkingRepository.findById(receiverId).get();
+
+                if(!secretKey.equals(receiverChecking.getSecretKey())){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect secret key");
+                }
+
                 receiverChecking.getBalance().increaseAmount(amount);
                 checkingRepository.save(receiverChecking);
             }
@@ -126,11 +131,21 @@ public class ThirdPartyServiceImpl implements ThirdPartyService{
             }
             case 3 -> {
                 Savings receiverSavings = savingsRepository.findById(receiverId).get();
+
+                if(!secretKey.equals(receiverSavings.getSecretKey())){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect secret key");
+                }
+
                 receiverSavings.getBalance().increaseAmount(amount);
                 savingsRepository.save(receiverSavings);
             }
             case 4 -> {
                 StudentChecking receiverStudent = studentCheckingRepository.findById(receiverId).get();
+
+                if(!secretKey.equals(receiverStudent.getSecretKey())){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect secret key");
+                }
+
                 receiverStudent.getBalance().increaseAmount(amount);
                 studentCheckingRepository.save(receiverStudent);
             }
@@ -156,6 +171,11 @@ public class ThirdPartyServiceImpl implements ThirdPartyService{
         switch (receiverAccount) {
             case 1 -> {
                 Checking receiverChecking = checkingRepository.findById(receiverId).get();
+
+                if(!secretKey.equals(receiverChecking.getSecretKey())){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect secret key");
+                }
+
                 receiverChecking.getBalance().decreaseAmount(amount);
                 checkingRepository.save(receiverChecking);
             }
@@ -166,11 +186,21 @@ public class ThirdPartyServiceImpl implements ThirdPartyService{
             }
             case 3 -> {
                 Savings receiverSavings = savingsRepository.findById(receiverId).get();
+
+                if(!secretKey.equals(receiverSavings.getSecretKey())){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect secret key");
+                }
+
                 receiverSavings.getBalance().decreaseAmount(amount);
                 savingsRepository.save(receiverSavings);
             }
             case 4 -> {
                 StudentChecking receiverStudent = studentCheckingRepository.findById(receiverId).get();
+
+                if(!secretKey.equals(receiverStudent.getSecretKey())){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect secret key");
+                }
+
                 receiverStudent.getBalance().decreaseAmount(amount);
                 studentCheckingRepository.save(receiverStudent);
             }

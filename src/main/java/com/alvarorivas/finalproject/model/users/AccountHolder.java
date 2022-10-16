@@ -2,7 +2,6 @@ package com.alvarorivas.finalproject.model.users;
 
 import com.alvarorivas.finalproject.model.util.Address;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;

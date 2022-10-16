@@ -20,7 +20,7 @@ import org.springframework.web.context.WebApplicationContext;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -42,6 +42,10 @@ class AdminControllerTest {
     void setUp() {
 
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+
+        Admin admin1 = new Admin("Pumba");
+
+        adminRepository.save(admin1);
     }
 
     @AfterEach
@@ -51,7 +55,19 @@ class AdminControllerTest {
     }
 
     @Test
-    void createAccount() throws Exception{
+    void findById() throws Exception{
+
+        MvcResult mvcResult = mockMvc.perform(get("/admin/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        Admin admin = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Admin.class);
+
+        assertEquals("Pumba", admin.getName());
+    }
+    @Test
+    void createAdmin() throws Exception{
 
         Admin newAdmin = new Admin("Juan Cuesta");
 
@@ -66,15 +82,35 @@ class AdminControllerTest {
 
         Admin admin = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Admin.class);
 
-        assertEquals(newAdmin.getId(), admin.getId());
         assertEquals(newAdmin.getName(), admin.getName());
+        assertTrue(adminRepository.findById(admin.getId()).isPresent());
     }
 
     @Test
-    void updateAccHolder() {
+    void updateAdmin() throws Exception{
+
+        Admin adminUpdate = new Admin("Timon");
+
+        String payload = objectMapper.writeValueAsString(adminUpdate);
+        MvcResult mvcResult = mockMvc.perform(patch("/admin/1/update")
+                        .content(payload)
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        Admin admin = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Admin.class);
+        assertEquals("Timon", admin.getName());
     }
 
     @Test
-    void deleteAccHolder() {
+    void deleteAdmin() throws Exception{
+
+        MvcResult mvcResult = mockMvc.perform(delete("/admin/1/delete"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        assertFalse(adminRepository.findById(1).isPresent());
     }
 }

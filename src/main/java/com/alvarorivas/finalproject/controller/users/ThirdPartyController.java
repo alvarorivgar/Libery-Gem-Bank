@@ -39,21 +39,21 @@ public class ThirdPartyController {
 
     @DeleteMapping("/third-party/{id}/delete")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteThirdParty(Integer id){
+    public void deleteThirdParty(@PathVariable Integer id){
 
         thirdPartyService.deleteThirdParty(id);
     }
 
     @PutMapping("third-party/{hashedKey}/send")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void sendMoney(@PathVariable String hashedKey, @RequestParam Integer receiverId, @RequestParam @Valid String secretKey, @RequestParam @Valid Money amount){
+    public void sendMoney(@PathVariable String hashedKey, @RequestParam Integer receiverId, @RequestParam @Valid String secretKey, @RequestBody @Valid Money amount){
 
         thirdPartyService.sendMoney(hashedKey, receiverId, secretKey, amount);
     }
 
     @PutMapping("third-party/{hashedKey}/charge")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void receiveMoney(@PathVariable String hashedKey, @RequestParam Integer receiverId, @RequestParam @Valid String secretKey, @RequestParam @Valid Money amount){
+    public void receiveMoney(@PathVariable String hashedKey, @RequestParam Integer receiverId, @RequestParam @Valid String secretKey, @RequestBody @Valid Money amount){
 
         thirdPartyService.receiveMoney(hashedKey, receiverId, secretKey, amount);
     }

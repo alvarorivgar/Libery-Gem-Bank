@@ -2,7 +2,6 @@ package com.alvarorivas.finalproject.model.users;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "third_party")
@@ -10,7 +9,6 @@ public class ThirdParty {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @NotNull
     private Integer id;
 
     @NotBlank

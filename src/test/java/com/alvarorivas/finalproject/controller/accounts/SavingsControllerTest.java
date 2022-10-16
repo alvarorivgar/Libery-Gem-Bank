@@ -1,12 +1,13 @@
 package com.alvarorivas.finalproject.controller.accounts;
 
-import com.alvarorivas.finalproject.model.accounts.Checking;
+import com.alvarorivas.finalproject.model.accounts.CreditCard;
+import com.alvarorivas.finalproject.model.accounts.Savings;
 import com.alvarorivas.finalproject.model.users.AccountHolder;
 import com.alvarorivas.finalproject.model.util.Address;
 import com.alvarorivas.finalproject.model.util.Money;
 import com.alvarorivas.finalproject.model.util.Status;
-import com.alvarorivas.finalproject.repository.accounts.CheckingRepository;
-import com.alvarorivas.finalproject.repository.accounts.StudentCheckingRepository;
+import com.alvarorivas.finalproject.repository.accounts.CreditCardRepository;
+import com.alvarorivas.finalproject.repository.accounts.SavingsRepository;
 import com.alvarorivas.finalproject.repository.users.AccountHolderRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -26,6 +27,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -33,19 +35,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-class CheckingControllerTest {
+class SavingsControllerTest {
 
     @Autowired
     private WebApplicationContext webApplicationContext;
 
     @Autowired
-    CheckingRepository checkingRepository;
+    SavingsRepository savingsRepository;
 
     @Autowired
     AccountHolderRepository accountHolderRepository;
-
-    @Autowired
-    StudentCheckingRepository studentCheckingRepository;
 
     private MockMvc mockMvc;
 
@@ -55,6 +54,7 @@ class CheckingControllerTest {
             .addModule(new JavaTimeModule())
             .build();
 
+
     @BeforeEach
     void setUp() {
 
@@ -63,49 +63,49 @@ class CheckingControllerTest {
         AccountHolder accountHolder = new AccountHolder("Pikachu", LocalDate.of(1990, 05, 14),
                 new Address("Pokeball"), null);
 
-        Checking checking = new Checking(new Money(new BigDecimal(1000)), accountHolder, null, Status.ACTIVE, "1234");
+        Savings savings = new Savings(new Money(new BigDecimal(1000)), accountHolder, null, Status.ACTIVE, new BigDecimal(0.0025), "1234",
+                new Money(new BigDecimal(200)));
 
-        Checking checking2 = new Checking(new Money(new BigDecimal(1000)), accountHolder, null, Status.ACTIVE, "1234");
-
+        Savings savings2 = new Savings(new Money(new BigDecimal(1000)), accountHolder, null, Status.ACTIVE, new BigDecimal(0.0025), "1234",
+                new Money(new BigDecimal(200)));
 
         accountHolderRepository.save(accountHolder);
-        checkingRepository.save(checking);
-        checkingRepository.save(checking2);
-
-
+        savingsRepository.saveAll(List.of(savings, savings2));
     }
 
     @AfterEach
     void tearDown() {
 
-        checkingRepository.deleteAll();
+        savingsRepository.deleteAll();
         accountHolderRepository.deleteAll();
     }
 
     @Test
-    void findbyId() throws Exception{
+    void findById() throws Exception{
 
-        MvcResult mvcResult = mockMvc.perform(get("/checking/1"))
+        MvcResult mvcResult = mockMvc.perform(get("/savings/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
 
-        Checking checking = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Checking.class);
+        Savings savings = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Savings.class);
 
-        assertEquals("Pikachu", checking.getPrimaryOwner().getName());
-        assertEquals(new Money(new BigDecimal(1000)), checking.getBalance());
+        assertEquals("Pikachu", savings.getPrimaryOwner().getName());
+        assertEquals(new Money(new BigDecimal(1000)), savings.getBalance());
     }
-    @Test
-    void createAccount() throws Exception {
 
-        AccountHolder accountHolder = new AccountHolder("Perico", LocalDate.of(1990, 05, 14),
-                new Address("Su casa"), null);
+    @Test
+    void createAccount() throws Exception{
+
+        AccountHolder accountHolder = new AccountHolder("Sauron", LocalDate.of(1990, 05, 14),
+                new Address("Mordor"), null);
         accountHolderRepository.save(accountHolder);
 
-        Checking newChecking = new Checking(new Money(new BigDecimal(500)), accountHolder, null, Status.ACTIVE, "1234");
+        Savings newSavings = new Savings(new Money(new BigDecimal(1000)), accountHolder, null, Status.ACTIVE, new BigDecimal(0.0025), "1234",
+                new Money(new BigDecimal(200)));
 
-        String payload = objectMapper.writeValueAsString(newChecking);
-        MvcResult mvcResult = mockMvc.perform(post("/checking")
+        String payload = objectMapper.writeValueAsString(newSavings);
+        MvcResult mvcResult = mockMvc.perform(post("/savings")
                         .content(payload)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -113,33 +113,11 @@ class CheckingControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
 
-        Checking checking = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Checking.class);
+        Savings savings = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Savings.class);
 
-        assertEquals(newChecking.getSecretKey(), checking.getSecretKey());
-        assertEquals(newChecking.getPrimaryOwner().getName(), checking.getPrimaryOwner().getName());
-        assertTrue(checkingRepository.findById(1).isPresent());
-    }
-
-    @Test
-    void createsStudentCheckingIfOwnerLessThan24() throws Exception {
-
-        AccountHolder accountHolder = new AccountHolder("Perico", LocalDate.of(2001, 05, 14),
-                new Address("Su casa"), null);
-        accountHolderRepository.save(accountHolder);
-
-        Checking newChecking = new Checking(new Money(new BigDecimal(500)), accountHolder, null, Status.ACTIVE, "1234");
-
-        String payload = objectMapper.writeValueAsString(newChecking);
-        MvcResult mvcResult = mockMvc.perform(post("/checking")
-                        .content(payload)
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().isCreated())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
-
-        assertTrue(studentCheckingRepository.findById(1).isPresent());
-        assertFalse(checkingRepository.findById(1).isPresent());
+        assertEquals(newSavings.getSecretKey(), savings.getSecretKey());
+        assertEquals(newSavings.getPrimaryOwner().getName(), savings.getPrimaryOwner().getName());
+        assertTrue(savingsRepository.findById(1).isPresent());
     }
 
     @Test
@@ -148,7 +126,7 @@ class CheckingControllerTest {
         Money money = new Money(new BigDecimal(500));
 
         String payload = objectMapper.writeValueAsString(money);
-        MvcResult mvcResult = mockMvc.perform(patch("/checking/1/update-balance")
+        MvcResult mvcResult = mockMvc.perform(patch("/savings/1/update-balance")
                         .content(payload)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -156,19 +134,19 @@ class CheckingControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
 
-        Checking checking = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Checking.class);
+        Savings savings = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Savings.class);
 
-        assertEquals(money, checking.getBalance());
+        assertEquals(money, savings.getBalance());
     }
 
     @Test
     void updateAccount() throws Exception{
 
-        Checking newChecking = new Checking(new Money(new BigDecimal(500)), accountHolderRepository.findById(1).get(), null, Status.FROZEN,
-                "1234");
+        Savings newSavings = new Savings(new Money(new BigDecimal(1000)), accountHolderRepository.findById(1).get(), null, Status.ACTIVE,
+                new BigDecimal(0.0025), "1234", new Money(new BigDecimal(200)));
 
-        String payload = objectMapper.writeValueAsString(newChecking);
-        MvcResult mvcResult = mockMvc.perform(put("/checking/1/update-account")
+        String payload = objectMapper.writeValueAsString(newSavings);
+        MvcResult mvcResult = mockMvc.perform(put("/savings/1/update-account")
                         .content(payload)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
@@ -176,29 +154,28 @@ class CheckingControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andReturn();
 
-        Checking checking = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Checking.class);
+        Savings savings = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Savings.class);
 
-        assertEquals(newChecking.getBalance(), checking.getBalance());
-        assertEquals(newChecking.getStatus(), checking.getStatus());
+        assertEquals(newSavings.getBalance(), savings.getBalance());
+        assertEquals(newSavings.getStatus(), savings.getStatus());
     }
 
     @Test
     void deleteAccount() throws Exception{
 
-        MvcResult mvcResult = mockMvc.perform(delete("/checking/1/delete")
+        MvcResult mvcResult = mockMvc.perform(delete("/savings/1/delete")
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
 
-        assertFalse(checkingRepository.findById(1).isPresent());
-
+        assertFalse(savingsRepository.findById(1).isPresent());
     }
 
     @Test
     void checkBalance() throws Exception{
 
-        MvcResult mvcResult = mockMvc.perform(get("/checking/1/balance")
+        MvcResult mvcResult = mockMvc.perform(get("/savings/1/balance")
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().is2xxSuccessful())
@@ -208,8 +185,6 @@ class CheckingControllerTest {
         Money balance = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Money.class);
 
         assertEquals(new Money(new BigDecimal(1000)), balance);
-
-
     }
 
     @Test
@@ -217,15 +192,14 @@ class CheckingControllerTest {
 
         String amount = objectMapper.writeValueAsString(new Money(new BigDecimal(500)));
 
-        MvcResult mvcResult = mockMvc.perform(put("/checking/1/transfer?receiverName=Pikachu&receiverId=2")
+        MvcResult mvcResult = mockMvc.perform(put("/savings/1/transfer?receiverName=Pikachu&receiverId=2")
                         .content(amount)
                         .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andExpect(status().is2xxSuccessful())
                 .andReturn();
 
-        assertEquals(new Money(new BigDecimal(500)), checkingRepository.findById(1).get().getBalance());
-        assertEquals(new Money(new BigDecimal(1500)), checkingRepository.findById(2).get().getBalance());
-
+        assertEquals(new Money(new BigDecimal(500)), savingsRepository.findById(1).get().getBalance());
+        assertEquals(new Money(new BigDecimal(1500)), savingsRepository.findById(2).get().getBalance());
     }
 }

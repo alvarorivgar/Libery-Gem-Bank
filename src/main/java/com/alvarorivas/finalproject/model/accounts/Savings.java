@@ -73,7 +73,7 @@ public class Savings extends Account{
 
     public void setMinimumBalance(Money minimumBalance) {
 
-        if(minimumBalance.getAmount().compareTo(new BigDecimal(100)) == 1){
+        if(minimumBalance.getAmount().compareTo(new BigDecimal(100)) == -1){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Minimum balance cannot be lower than 100");
         }
         this.minimumBalance = minimumBalance;

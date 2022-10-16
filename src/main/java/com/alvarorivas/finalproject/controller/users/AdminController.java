@@ -23,21 +23,21 @@ public class AdminController {
 
     @PostMapping("/admin")
     @ResponseStatus(HttpStatus.CREATED)
-    public Admin createAccount(@RequestBody @Valid Admin admin){
+    public Admin createAdmin(@RequestBody @Valid Admin admin){
 
         return adminService.createAdmin(admin);
     }
 
     @PatchMapping("/admin/{id}/update")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Admin updateAccHolder(@PathVariable Integer id, @RequestBody @Valid Admin admin) {
+    public Admin updateAdmin(@PathVariable Integer id, @RequestBody @Valid Admin admin) {
 
         return adminService.updateAdmin(id, admin);
     }
 
     @DeleteMapping("/admin/{id}/delete")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteAccHolder(@PathVariable Integer id){
+    public void deleteAdmin(@PathVariable Integer id){
 
         adminService.deleteAdmin(id);
     }

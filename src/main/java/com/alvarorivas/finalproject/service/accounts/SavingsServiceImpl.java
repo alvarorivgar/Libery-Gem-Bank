@@ -181,7 +181,7 @@ public class SavingsServiceImpl implements SavingsService{
     @Override
     public void transferMoney(Integer originId, String receiverName, Integer receiverId, Money amount) {
 
-        Optional<Checking> originAccount = checkingRepository.findById(originId);
+        Optional<Savings> originAccount = savingsRepository.findById(originId);
 
         Integer receiverAccount = accountTypeChecker(receiverId);
 
@@ -204,7 +204,7 @@ public class SavingsServiceImpl implements SavingsService{
 
 
         originAccount.get().getBalance().decreaseAmount(amount);
-        checkingRepository.save(originAccount.get());
+        savingsRepository.save(originAccount.get());
 
         switch (receiverAccount) {
             case 1 -> {

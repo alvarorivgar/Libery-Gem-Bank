@@ -46,7 +46,6 @@ public class CheckingServiceImpl implements CheckingService{
            return studentCheckingService.fromChecking(checking);
 
        }else {
-
            return checkingRepository.save(checking);
       }
    }
@@ -152,6 +151,8 @@ public class CheckingServiceImpl implements CheckingService{
         Optional<Checking> storedChecking = checkingRepository.findById(id);
 
         if (storedChecking.isPresent()) {
+
+            if(id.equals(storedChecking.get().getPrimaryOwner()))
 
             //Applies monthly maintenance fee and penalty fee if applicable to update balance
             applyPenaltyFee(id);
