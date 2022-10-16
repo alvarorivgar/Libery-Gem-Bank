@@ -155,7 +155,7 @@ public class CreditCardServiceImpl implements CreditCardService{
     @Override
     public void transferMoney(Integer originId, String receiverName, Integer receiverId, Money amount) {
 
-        Optional<Checking> originAccount = checkingRepository.findById(originId);
+        Optional<CreditCard> originAccount = creditCardRepository.findById(originId);
 
         Integer receiverAccount = accountTypeChecker(receiverId);
 
@@ -178,7 +178,7 @@ public class CreditCardServiceImpl implements CreditCardService{
 
 
         originAccount.get().getBalance().decreaseAmount(amount);
-        checkingRepository.save(originAccount.get());
+        creditCardRepository.save(originAccount.get());
 
         switch (receiverAccount) {
             case 1 -> {

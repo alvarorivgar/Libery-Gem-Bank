@@ -135,7 +135,7 @@ public class StudentCheckingServiceImpl implements StudentCheckingService{
     @Override
     public void transferMoney(Integer originId, String receiverName, Integer receiverId, Money amount) {
 
-        Optional<Checking> originAccount = checkingRepository.findById(originId);
+        Optional<StudentChecking> originAccount = studentCheckingRepository.findById(originId);
 
         Integer receiverAccount = accountTypeChecker(receiverId);
 
@@ -154,7 +154,7 @@ public class StudentCheckingServiceImpl implements StudentCheckingService{
 
 
         originAccount.get().getBalance().decreaseAmount(amount);
-        checkingRepository.save(originAccount.get());
+        studentCheckingRepository.save(originAccount.get());
 
         switch (receiverAccount) {
             case 1 -> {

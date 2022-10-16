@@ -4,6 +4,7 @@ import javax.persistence.Embeddable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Currency;
+import java.util.Objects;
 
 @Embeddable
 public class Money {
@@ -12,6 +13,7 @@ public class Money {
     private static final RoundingMode DEFAULT_ROUNDING = RoundingMode.HALF_EVEN;
 
     private Currency currency;
+
     private BigDecimal amount;
 
     /**
@@ -65,6 +67,10 @@ public class Money {
         return this.currency;
     }
 
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
+    }
+
     public BigDecimal getAmount() {
         return this.amount;
     }
@@ -75,5 +81,13 @@ public class Money {
 
     public String toString() {
         return getCurrency().getSymbol() + " " + getAmount();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Money money = (Money) o;
+        return Objects.equals(currency, money.currency) && Objects.equals(amount, money.amount);
     }
 }

@@ -1,6 +1,7 @@
 package com.alvarorivas.finalproject.model.security;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -15,7 +16,7 @@ public class User {
     private String password;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    Set<Role> roles;
+    Set<Role> roles = new HashSet<>();
 
     public Integer getId() {
         return id;
