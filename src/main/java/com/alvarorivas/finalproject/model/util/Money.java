@@ -67,6 +67,10 @@ public class Money {
         return this.currency;
     }
 
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
+    }
+
     public BigDecimal getAmount() {
         return this.amount;
     }

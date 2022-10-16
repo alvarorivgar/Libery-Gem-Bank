@@ -23,7 +23,6 @@ import java.time.LocalDate;
 public class Savings extends Account{
 
     @NotNull
-    @DecimalMax(value = "0.5", message = "Interest rate cannot be higher than 0.5")
     private BigDecimal interestRate = new BigDecimal(0.0025);
 
     @NotBlank
@@ -56,6 +55,10 @@ public class Savings extends Account{
 
     public void setInterestRate(BigDecimal interestRate) {
 
+        if(interestRate.compareTo(new BigDecimal(0.5)) == 1){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Interest rate cannot be higher than 0.5");
+
+        }
         this.interestRate = interestRate;
     }
 

@@ -25,7 +25,6 @@ public class CreditCard extends Account{
     @Embedded
     private Money creditLimit = new Money(new BigDecimal(100));
 
-    @DecimalMin(value = "0.1", message = "Interest rate cannot be lower than 0.1")
     private BigDecimal interestRate = new BigDecimal(0.2);
 
     private LocalDate lastInterestApplication = getCreationDate().plusMonths(1).withDayOfMonth(1);
@@ -58,6 +57,10 @@ public class CreditCard extends Account{
     }
 
     public void setInterestRate(BigDecimal interestRate) {
+
+        if(interestRate.compareTo(new BigDecimal(0.1)) == -1){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Interest rate cannot be lower than 0.1");
+        }
         this.interestRate = interestRate;
     }
 

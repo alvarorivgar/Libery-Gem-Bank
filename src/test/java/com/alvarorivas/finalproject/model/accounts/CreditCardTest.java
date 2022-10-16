@@ -4,43 +4,34 @@ import com.alvarorivas.finalproject.model.users.AccountHolder;
 import com.alvarorivas.finalproject.model.util.Address;
 import com.alvarorivas.finalproject.model.util.Money;
 import com.alvarorivas.finalproject.model.util.Status;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 
 class CreditCardTest {
 
     private CreditCard card1;
 
-    private CreditCard card2;
+    @Test
+    void invalidCreditLimitThrowsException() {
 
+        CreditCard card1 = new CreditCard(new Money(new BigDecimal(500)), new AccountHolder("Perico", LocalDate.of(1992,8,26),
+                new Address("Casa"), null), null, Status.FROZEN, new Money(new BigDecimal(500)), new BigDecimal(0.5));
 
-    @BeforeEach
-    void setUp() {
-
-        CreditCard card1 = new CreditCard(new Money(new BigDecimal(1000)), new AccountHolder("Perico", LocalDate.now().minusYears(20),
-                new Address("Su casa"), null), null, Status.ACTIVE, new Money(new BigDecimal(100000)), null);
-
-        CreditCard card2 = new CreditCard();
-
-    }
-
-    @AfterEach
-    void tearDown() {
+        assertThrows(ResponseStatusException.class, ()-> card1.setCreditLimit(new Money(new BigDecimal(100001))));
     }
 
     @Test
-    void setCreditLimit() {
+    void invalidInterestRateThrowsException() {
 
-        assertEquals(new Money(new BigDecimal(100000)), card1.getCreditLimit());
-    }
+        CreditCard card1 = new CreditCard(new Money(new BigDecimal(500)), new AccountHolder("Perico", LocalDate.of(1992,8,26),
+                new Address("Casa"), null), null, Status.FROZEN, new Money(new BigDecimal(500)), new BigDecimal(0.5));
 
-    @Test
-    void setInterestRate() {
+        assertThrows(ResponseStatusException.class, ()-> card1.setInterestRate(new BigDecimal(0.05)));
     }
 }
