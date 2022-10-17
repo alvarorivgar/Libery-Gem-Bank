@@ -208,8 +208,29 @@ class CheckingControllerTest {
         Money balance = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Money.class);
 
         assertEquals(new Money(new BigDecimal(1000)), balance);
+    }
+
+    @Test
+    void applyPenaltyFee() throws Exception{
+
+        Checking checking = checkingRepository.findById(1).get();
+
+        checking.setLastPenaltyFeeCheck(LocalDate.now().minusMonths(2));
+        checking.setBalance(new Money(new BigDecimal(100)));
+
+        checkingRepository.save(checking);
 
 
+        MvcResult mvcResult = mockMvc.perform(get("/checking/1/balance")
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        Money balance = objectMapper.readValue(mvcResult.getResponse().getContentAsString(), Money.class);
+
+        assertEquals(new Money(new BigDecimal(60)), balance);
     }
 
     @Test
@@ -217,7 +238,7 @@ class CheckingControllerTest {
 
         String amount = objectMapper.writeValueAsString(new Money(new BigDecimal(500)));
 
-        MvcResult mvcResult = mockMvc.perform(put("/checking/1/transfer?receiverName=Pikachu&receiverId=2")
+        MvcResult mvcResult = mockMvc.perform(put("/checking/1/transfer?receiverName=Pikachu&receiverId=2&accountType=checking")
                         .content(amount)
                         .contentType(MediaType.APPLICATION_JSON)
                 )

@@ -41,16 +41,13 @@ public class SecurityConfiguration {
         http.authorizeRequests()
 //              .mvcMatchers(HttpMethod.GET, "/public/**").permitAll()
                 .mvcMatchers(HttpMethod.POST).hasRole("ADMIN")
+//                .mvcMatchers(HttpMethod.PUT, "/checking/{id}/transfer").hasRole("ACCOUNT_HOLDER")
 //                .mvcMatchers(HttpMethod.POST, "/savings").hasRole("ADMIN")
 //                .mvcMatchers(HttpMethod.POST, "/credit-card").hasRole("ADMIN")
 //                .mvcMatchers(HttpMethod.POST, "/student-checking").hasRole("ADMIN")
 //                .mvcMatchers(HttpMethod.POST, "/account-holder").hasRole("ADMIN")
 //                .mvcMatchers(HttpMethod.POST, "/admin").anonymous()
 //                .mvcMatchers(HttpMethod.POST, "/third-party").hasRole("ADMIN")
-//                .mvcMatchers(HttpMethod.GET, "/checking/**").hasAnyRole("ADMIN", "ACCOUNT_HOLDER")
-//                .mvcMatchers(HttpMethod.GET, "/savings/**").hasAnyRole("ADMIN", "ACCOUNT_HOLDER")
-//                .mvcMatchers(HttpMethod.GET, "/credit-card/**").hasAnyRole("ADMIN", "ACCOUNT_HOLDER")
-//                .mvcMatchers(HttpMethod.GET, "/student-checking/**").hasAnyRole("ADMIN", "ACCOUNT_HOLDER")
 
 
 

@@ -192,7 +192,7 @@ class SavingsControllerTest {
 
         String amount = objectMapper.writeValueAsString(new Money(new BigDecimal(500)));
 
-        MvcResult mvcResult = mockMvc.perform(put("/savings/1/transfer?receiverName=Pikachu&receiverId=2")
+        MvcResult mvcResult = mockMvc.perform(put("/savings/1/transfer?receiverName=Pikachu&receiverId=2&accountType=savings")
                         .content(amount)
                         .contentType(MediaType.APPLICATION_JSON)
                 )

@@ -60,8 +60,8 @@ public class SavingsController {
     @PutMapping("/savings/{id}/transfer")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void transferMoney(@PathVariable(value = "id") Integer originId, @RequestParam String receiverName, @RequestParam @Valid Integer receiverId,
-                              @RequestBody Money amount){
+                              @RequestParam String accountType, @RequestBody Money amount){
 
-        savingsService.transferMoney(originId, receiverName, receiverId, amount);
+        savingsService.transferMoney(originId, receiverName, receiverId, accountType, amount);
     }
 }

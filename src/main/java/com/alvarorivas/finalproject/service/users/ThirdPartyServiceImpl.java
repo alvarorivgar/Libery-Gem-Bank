@@ -77,100 +77,21 @@ public class ThirdPartyServiceImpl implements ThirdPartyService{
     }
 
     @Override
-    public Integer accountTypeChecker(Integer id) {
-
-        Optional<Checking> checking = checkingRepository.findById(id);
-        Optional<CreditCard> creditCard = creditCardRepository.findById(id);
-        Optional<Savings> savings = savingsRepository.findById(id);
-        Optional<StudentChecking> studentChecking = studentCheckingRepository.findById(id);
-
-        if (checking.isPresent()) {
-            return 1;
-        } else if (creditCard.isPresent()) {
-            return 2;
-        } else if (savings.isPresent()) {
-            return 3;
-        } else if (studentChecking.isPresent()) {
-            return 4;
-        }else {
-            return null;
-        }
-    }
-
-    @Override
-    public void sendMoney(String hashedKey, Integer receiverId, String secretKey, Money amount) {
+    public void sendMoney(String hashedKey, Integer receiverId, String secretKey, String accountType, Money amount) {
 
         Optional<ThirdParty> thirdParty = thirdPartyRepository.findByHashedKey(hashedKey);
-
-        Integer receiverAccount = accountTypeChecker(receiverId);
-
 
         if(!thirdParty.isPresent()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Origin account not found");
         }
 
-        if(receiverAccount == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");
-        }
-
-        switch (receiverAccount) {
-            case 1 -> {
+        //Check account type and send amount
+        switch (accountType) {
+            case "checking" -> {
                 Checking receiverChecking = checkingRepository.findById(receiverId).get();
 
-                if(!secretKey.equals(receiverChecking.getSecretKey())){
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect secret key");
-                }
-
-                receiverChecking.getBalance().increaseAmount(amount);
-                checkingRepository.save(receiverChecking);
-            }
-            case 2 -> {
-                CreditCard receiverCard = creditCardRepository.findById(receiverId).get();
-                receiverCard.getBalance().increaseAmount(amount);
-                creditCardRepository.save(receiverCard);
-            }
-            case 3 -> {
-                Savings receiverSavings = savingsRepository.findById(receiverId).get();
-
-                if(!secretKey.equals(receiverSavings.getSecretKey())){
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect secret key");
-                }
-
-                receiverSavings.getBalance().increaseAmount(amount);
-                savingsRepository.save(receiverSavings);
-            }
-            case 4 -> {
-                StudentChecking receiverStudent = studentCheckingRepository.findById(receiverId).get();
-
-                if(!secretKey.equals(receiverStudent.getSecretKey())){
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect secret key");
-                }
-
-                receiverStudent.getBalance().increaseAmount(amount);
-                studentCheckingRepository.save(receiverStudent);
-            }
-        }
-    }
-
-    @Override
-    public void receiveMoney(String hashedKey, Integer receiverId, String secretKey, Money amount) {
-
-        Optional<ThirdParty> thirdParty = thirdPartyRepository.findByHashedKey(hashedKey);
-
-        Integer receiverAccount = accountTypeChecker(receiverId);
-
-
-        if(!thirdParty.isPresent()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Origin account not found");
-        }
-
-        if(receiverAccount == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");
-        }
-
-        switch (receiverAccount) {
-            case 1 -> {
-                Checking receiverChecking = checkingRepository.findById(receiverId).get();
+                if(receiverChecking == null){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Target account not found");}
 
                 if(!secretKey.equals(receiverChecking.getSecretKey())){
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect secret key");
@@ -179,13 +100,20 @@ public class ThirdPartyServiceImpl implements ThirdPartyService{
                 receiverChecking.getBalance().decreaseAmount(amount);
                 checkingRepository.save(receiverChecking);
             }
-            case 2 -> {
+            case "creditcard" -> {
                 CreditCard receiverCard = creditCardRepository.findById(receiverId).get();
+
+                if(receiverCard == null){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Target account not found");}
+
                 receiverCard.getBalance().decreaseAmount(amount);
                 creditCardRepository.save(receiverCard);
             }
-            case 3 -> {
+            case "savings" -> {
                 Savings receiverSavings = savingsRepository.findById(receiverId).get();
+
+                if(receiverSavings == null){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Target account not found");}
 
                 if(!secretKey.equals(receiverSavings.getSecretKey())){
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect secret key");
@@ -194,8 +122,74 @@ public class ThirdPartyServiceImpl implements ThirdPartyService{
                 receiverSavings.getBalance().decreaseAmount(amount);
                 savingsRepository.save(receiverSavings);
             }
-            case 4 -> {
+            case "studentchecking" -> {
                 StudentChecking receiverStudent = studentCheckingRepository.findById(receiverId).get();
+
+                if(receiverStudent == null){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Target account not found");}
+
+                if(!secretKey.equals(receiverStudent.getSecretKey())){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect secret key");
+                }
+
+                receiverStudent.getBalance().decreaseAmount(amount);
+                studentCheckingRepository.save(receiverStudent);
+            }
+        }
+    }
+
+    @Override
+    public void receiveMoney(String hashedKey, Integer receiverId, String secretKey, String accountType, Money amount) {
+
+        Optional<ThirdParty> thirdParty = thirdPartyRepository.findByHashedKey(hashedKey);
+
+
+        if(!thirdParty.isPresent()){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Origin account not found");
+        }
+
+        //Check account type and charge amount
+        switch (accountType) {
+            case "checking" -> {
+                Checking receiverChecking = checkingRepository.findById(receiverId).get();
+
+                if(receiverChecking == null){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Target account not found");}
+
+                if(!secretKey.equals(receiverChecking.getSecretKey())){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect secret key");
+                }
+
+                receiverChecking.getBalance().decreaseAmount(amount);
+                checkingRepository.save(receiverChecking);
+            }
+            case "creditcard" -> {
+                CreditCard receiverCard = creditCardRepository.findById(receiverId).get();
+
+                if(receiverCard == null){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Target account not found");}
+
+                receiverCard.getBalance().decreaseAmount(amount);
+                creditCardRepository.save(receiverCard);
+            }
+            case "savings" -> {
+                Savings receiverSavings = savingsRepository.findById(receiverId).get();
+
+                if(receiverSavings == null){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Target account not found");}
+
+                if(!secretKey.equals(receiverSavings.getSecretKey())){
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect secret key");
+                }
+
+                receiverSavings.getBalance().decreaseAmount(amount);
+                savingsRepository.save(receiverSavings);
+            }
+            case "studentchecking" -> {
+                StudentChecking receiverStudent = studentCheckingRepository.findById(receiverId).get();
+
+                if(receiverStudent == null){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Target account not found");}
 
                 if(!secretKey.equals(receiverStudent.getSecretKey())){
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Incorrect secret key");

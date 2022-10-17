@@ -46,15 +46,17 @@ public class ThirdPartyController {
 
     @PutMapping("third-party/{hashedKey}/send")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void sendMoney(@PathVariable String hashedKey, @RequestParam Integer receiverId, @RequestParam @Valid String secretKey, @RequestBody @Valid Money amount){
+    public void sendMoney(@PathVariable String hashedKey, @RequestParam Integer receiverId, @RequestParam @Valid String secretKey, @RequestParam String accountType,
+                          @RequestBody @Valid Money amount){
 
-        thirdPartyService.sendMoney(hashedKey, receiverId, secretKey, amount);
+        thirdPartyService.sendMoney(hashedKey, receiverId, secretKey, accountType, amount);
     }
 
     @PutMapping("third-party/{hashedKey}/charge")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void receiveMoney(@PathVariable String hashedKey, @RequestParam Integer receiverId, @RequestParam @Valid String secretKey, @RequestBody @Valid Money amount){
+    public void receiveMoney(@PathVariable String hashedKey, @RequestParam Integer receiverId, @RequestParam @Valid String secretKey, @RequestParam String accountType,
+                             @RequestBody @Valid Money amount){
 
-        thirdPartyService.receiveMoney(hashedKey, receiverId, secretKey, amount);
+        thirdPartyService.receiveMoney(hashedKey, receiverId, secretKey, accountType, amount);
     }
 }

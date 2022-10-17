@@ -192,7 +192,7 @@ class CreditCardControllerTest {
 
         String amount = objectMapper.writeValueAsString(new Money(new BigDecimal(500)));
 
-        MvcResult mvcResult = mockMvc.perform(put("/credit-card/1/transfer?receiverName=Pikachu&receiverId=2")
+        MvcResult mvcResult = mockMvc.perform(put("/credit-card/1/transfer?receiverName=Pikachu&receiverId=2&accountType=creditcard")
                         .content(amount)
                         .contentType(MediaType.APPLICATION_JSON)
                 )

@@ -60,6 +60,7 @@ public class SavingsServiceImpl implements SavingsService{
         if (storedSavings.isPresent()) {
 
             storedSavings.get().setLastInterestApplication(savings.getLastInterestApplication());
+            storedSavings.get().setLastFeeApplication(savings.getLastFeeApplication());
             storedSavings.get().setMinimumBalance(savings.getMinimumBalance());
             storedSavings.get().setInterestRate(savings.getInterestRate());
             storedSavings.get().setBalance(savings.getBalance());
@@ -98,6 +99,9 @@ public class SavingsServiceImpl implements SavingsService{
         if (storedSavings.isPresent()) {
 
             while(LocalDate.now().isAfter(storedSavings.get().getLastFeeApplication().plusMonths(1))){
+
+                //Adds 1 month to last penalty fee check
+                storedSavings.get().setLastFeeApplication(storedSavings.get().getLastFeeApplication().plusMonths(1));
 
                 //Check if current balance is lower than minimum balance
                 if (storedSavings.get().getBalance().getAmount().compareTo(storedSavings.get().getMinimumBalance().getAmount()) == -1) {
@@ -158,40 +162,12 @@ public class SavingsServiceImpl implements SavingsService{
     }
 
     @Override
-    public Integer accountTypeChecker(Integer id) {
-
-        Optional<Checking> checking = checkingRepository.findById(id);
-        Optional<CreditCard> creditCard = creditCardRepository.findById(id);
-        Optional<Savings> savings = savingsRepository.findById(id);
-        Optional<StudentChecking> studentChecking = studentCheckingRepository.findById(id);
-
-        if (checking.isPresent()) {
-            return 1;
-        } else if (creditCard.isPresent()) {
-            return 2;
-        } else if (savings.isPresent()) {
-            return 3;
-        } else if (studentChecking.isPresent()) {
-            return 4;
-        }else {
-            return null;
-        }
-    }
-
-    @Override
-    public void transferMoney(Integer originId, String receiverName, Integer receiverId, Money amount) {
+    public void transferMoney(Integer originId, String receiverName, Integer receiverId, String accountType, Money amount) {
 
         Optional<Savings> originAccount = savingsRepository.findById(originId);
 
-        Integer receiverAccount = accountTypeChecker(receiverId);
-
-
         if(!originAccount.isPresent()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Origin account not found");}
-
-        if(receiverAccount == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");
-        }
 
         //Check if balance is updated
         applyPenaltyFee(originId);
@@ -202,30 +178,47 @@ public class SavingsServiceImpl implements SavingsService{
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient funds");
         }
 
-
+        //Decrease balance of origin account
         originAccount.get().getBalance().decreaseAmount(amount);
         savingsRepository.save(originAccount.get());
 
-        switch (receiverAccount) {
-            case 1 -> {
-                Checking receiverChecking = checkingRepository.findById(receiverId).get();
-                receiverChecking.getBalance().increaseAmount(amount);
-                checkingRepository.save(receiverChecking);
+        //Check account type and increase balance of receiver account
+        switch (accountType) {
+            case "checking" -> {
+                Optional<Checking> receiverChecking = checkingRepository.findById(receiverId);
+
+                if(!receiverChecking.isPresent()){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");}
+
+                receiverChecking.get().getBalance().increaseAmount(amount);
+                checkingRepository.save(receiverChecking.get());
             }
-            case 2 -> {
-                CreditCard receiverCard = creditCardRepository.findById(receiverId).get();
-                receiverCard.getBalance().increaseAmount(amount);
-                creditCardRepository.save(receiverCard);
+            case "creditcard" -> {
+                Optional<CreditCard> receiverCard = creditCardRepository.findById(receiverId);
+
+                if(!receiverCard.isPresent()){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");}
+
+                receiverCard.get().getBalance().increaseAmount(amount);
+                creditCardRepository.save(receiverCard.get());
             }
-            case 3 -> {
-                Savings receiverSavings = savingsRepository.findById(receiverId).get();
-                receiverSavings.getBalance().increaseAmount(amount);
-                savingsRepository.save(receiverSavings);
+            case "savings" -> {
+                Optional<Savings> receiverSavings = savingsRepository.findById(receiverId);
+
+                if(!receiverSavings.isPresent()){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");}
+
+                receiverSavings.get().getBalance().increaseAmount(amount);
+                savingsRepository.save(receiverSavings.get());
             }
-            case 4 -> {
-                StudentChecking receiverStudent = studentCheckingRepository.findById(receiverId).get();
-                receiverStudent.getBalance().increaseAmount(amount);
-                studentCheckingRepository.save(receiverStudent);
+            case "studentchecking" -> {
+                Optional<StudentChecking> receiverStudent = studentCheckingRepository.findById(receiverId);
+
+                if(!receiverStudent.isPresent()){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");}
+
+                receiverStudent.get().getBalance().increaseAmount(amount);
+                studentCheckingRepository.save(receiverStudent.get());
             }
         }
     }
