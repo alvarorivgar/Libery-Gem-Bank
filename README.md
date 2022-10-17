@@ -2,7 +2,9 @@
 
 <h2>Requirements</h2>
 
+<li>
 <ol>The system must have 4 types of accounts: StudentChecking, Checking, Savings, and CreditCard.</ol>
+</li>
 
 <h3>Checking</h3>
 
