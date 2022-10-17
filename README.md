@@ -65,13 +65,13 @@ AccountHolders have:
 <h4>Admins</h4>
 
 
-Admins only have a name
+<ul>Admins only have a name</ul>
 
 
 <h4>ThirdParty</h4>
 
 
-The ThirdParty Accounts have a hashed key and a name.
+<ul>The ThirdParty Accounts have a hashed key and a name.</ul>
 
 
 <h3>3. Admins can create new accounts. When creating a new account they can create Checking, Savings, or CreditCard Accounts.</h3>
