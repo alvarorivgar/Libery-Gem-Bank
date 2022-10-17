@@ -140,3 +140,12 @@ AccountHolders have:
 <ul>There must be a way for third-party users to receive and send money to other accounts.</ul>
 <ul>Third-party users must be added to the database by an admin.</ul>
 <ul>In order to receive and send money, Third-Party Users must provide their hashed key in the header of the HTTP request. They also must provide the amount, the Account id and the account secret key.</ul>
+
+<h2>Technical Requirements</h2>
+<ul>Include a Java/Spring Boot backend.</ul>
+<ul>Everything should be stored in MySQL database tables.</ul>
+<ul>Include at least 1 GET, POST, PUT/PATCH, and DELETE route.</ul>
+<ul>Include authentication with Spring Security.</ul>
+<ul>Include unit and integration tests.</ul>
+<ul>Include robust error handling.</ul>
+<ul>You must use the Money class for all currency and BigDecimal for any other decimal or large number math.</ul>
