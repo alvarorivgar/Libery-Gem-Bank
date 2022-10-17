@@ -3,9 +3,9 @@
 <h2>Requirements</h2>
 
 
-1. The system must have 4 types of accounts: StudentChecking, Checking, Savings, and CreditCard.
+<h3>1. The system must have 4 types of accounts: StudentChecking, Checking, Savings, and CreditCard.</h3>
 
-<h3>Checking</h3>
+<h4>Checking</h4>
 
 
 Checking Accounts should have:
@@ -20,7 +20,7 @@ Checking Accounts should have:
 <ul>A creationDate</ul>
 <ul>A status (FROZEN, ACTIVE)</ul>
 
-<h3>StudentChecking</h3>
+<h4>StudentChecking</h4>
 
 
 Student Checking Accounts are identical to Checking Accounts except that they do NOT have:
@@ -28,7 +28,7 @@ Student Checking Accounts are identical to Checking Accounts except that they do
 <ul>A monthlyMaintenanceFee</ul>
 <ul>A minimumBalance</ul>
 
-<h3>Savings</h3>
+<h4>Savings</h4>
 
 
 Savings are identical to Checking accounts except that they
@@ -36,7 +36,7 @@ Savings are identical to Checking accounts except that they
 <ul>Do NOT have a monthlyMaintenanceFee</ul>
 <ul>Do have an interestRate</ul>
 
-<h3>Credit Card</h3>
+<h4>Credit Card</h4>
 
 
 CreditCard Accounts have:
@@ -48,9 +48,9 @@ CreditCard Accounts have:
 <ul>An interestRate</ul>
 <ul>A penaltyFee</ul>
 
-2. The system must have 3 types of Users: Admins, AccountHolders and Third Party Users.
+<h3>2. The system must have 3 types of Users: Admins, AccountHolders and Third Party Users.</h3>
 
-<h3>AccountHolders</h3>
+<h4>AccountHolders</h4>
 
 
 The AccountHolders should be able to access their own accounts and only their accounts when passing the correct credentials using Basic Auth. 
@@ -62,21 +62,21 @@ AccountHolders have:
 <ul>A primaryAddress (which should be a separate address class)</ul>
 <ul>An optional mailingAddress</ul>
 
-<h3>Admins</h3>
+<h4>Admins</h4>
 
 
 Admins only have a name
 
 
-<h3>ThirdParty</h3>
+<h4>ThirdParty</h4>
 
 
 The ThirdParty Accounts have a hashed key and a name.
 
 
-3. Admins can create new accounts. When creating a new account they can create Checking, Savings, or CreditCard Accounts.
+<h3>3. Admins can create new accounts. When creating a new account they can create Checking, Savings, or CreditCard Accounts.</h3>
 
-<h3>Savings</h3>
+<h4>Savings</h4>
 
 
 <ul>Savings accounts have a default interest rate of 0.0025</ul>
@@ -84,7 +84,7 @@ The ThirdParty Accounts have a hashed key and a name.
 <ul>Savings accounts should have a default minimumBalance of 1000</ul>
 <ul>Savings accounts may be instantiated with a minimum balance of less than 1000 but no lower than 100</ul>
 
-<h3>CreditCards</h3>
+<h4>CreditCards</h4>
 
 
 <ul>CreditCard accounts have a default creditLimit of 100</ul>
@@ -92,7 +92,7 @@ The ThirdParty Accounts have a hashed key and a name.
 <ul>CreditCards have a default interestRate of 0.2</ul>
 <ul>CreditCards may be instantiated with an interestRate less than 0.2 but not lower than 0.1</ul>
 
-<h3>CheckingAccounts</h3>
+<h4>CheckingAccounts</h4>
 
 
 <ul>When creating a new Checking account, if the primaryOwner is less than 24, a StudentChecking account should be created otherwise a regular Checking Account should be created.</ul>
@@ -100,13 +100,13 @@ The ThirdParty Accounts have a hashed key and a name.
 
 <ul>Interest and Fees should be applied appropriately</ul>
 
-<h3>PenaltyFee</h3>
+<h4>PenaltyFee</h4>
 
 
 <ul>The penaltyFee for all accounts should be 40.</ul>
 <ul>If any account drops below the minimumBalance, the penaltyFee should be deducted from the balance automatically</ul>
 
-<h3>InterestRate</h3>
+<h4>InterestRate</h4>
 
 
 <ul>Interest on savings accounts is added to the account annually at the rate of specified interestRate per year. That means that if I have 1000000 in a savings account with a 0.01 interest rate, 1% of 1 Million is added to my account after 1 year. When a savings account balance is accessed, you must determine if it has been 1 year or more since either the account was created or since interest was added to the account, and add the appropriate interest to the balance if necessary.</ul>
@@ -114,20 +114,20 @@ The ThirdParty Accounts have a hashed key and a name.
 <ul>Interest on credit cards is added to the balance monthly. If you have a 12% interest rate (0.12) then 1% interest will be added to the account monthly. When the balance of a credit card is accessed, check to determine if it has been 1 month or more since the account was created or since interested was added, and if so, add the appropriate interest to the balance.</ul>
 
 
-4. Account Access
+<h3>4. Account Access</h3>
 
-<h3>Admins</h3>
+<h4>Admins</h4>
 
 
 <ul>Admins should be able to access the balance for any account and to modify it.</ul>
 
-<h3>AccountHolders</h3>
+<h4>AccountHolders</h4>
 
 
 <ul>AccountHolders should be able to access their own account balance</ul>
 <ul>Account holders should be able to transfer money from any of their accounts to any other account (regardless of owner). The transfer should only be processed if the account has sufficient funds. The user must provide the Primary or Secondary owner name and the id of the account that should receive the transfer.</ul>
 
-<h3>Third-Party Users</h3>
+<h4>Third-Party Users</h4>
 
 
 <ul>There must be a way for third-party users to receive and send money to other accounts.</ul>
