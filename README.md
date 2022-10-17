@@ -1,5 +1,12 @@
 # final-project
 
+<h2>Class Diagram</h2>
+
+![Class Diagram](https://user-images.githubusercontent.com/108625085/196240022-c713b314-8a56-44b1-9ac7-1022183c5328.png)
+
+<h2>Use Case Diagram</h2>
+
+
 <h2>Requirements</h2>
 
 
@@ -133,9 +140,3 @@ AccountHolders have:
 <ul>There must be a way for third-party users to receive and send money to other accounts.</ul>
 <ul>Third-party users must be added to the database by an admin.</ul>
 <ul>In order to receive and send money, Third-Party Users must provide their hashed key in the header of the HTTP request. They also must provide the amount, the Account id and the account secret key.</ul>
-
-<h2>Class Diagram</h2>
-
-![Class Diagram](https://user-images.githubusercontent.com/108625085/196240022-c713b314-8a56-44b1-9ac7-1022183c5328.png)
-
-<h2>Use Case Diagram</h2>
