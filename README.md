@@ -2,16 +2,15 @@
 
 <h2>Requirements</h2>
 
-<li>
-<ol>The system must have 4 types of accounts: StudentChecking, Checking, Savings, and CreditCard.</ol>
-</li>
+
+1. The system must have 4 types of accounts: StudentChecking, Checking, Savings, and CreditCard.
 
 <h3>Checking</h3>
 
 
 <b>Checking Accounts should have:</b>
 
-A balance
+<ul>A balance</ul>
 A secretKey
 A PrimaryOwner
 An optional SecondaryOwner
