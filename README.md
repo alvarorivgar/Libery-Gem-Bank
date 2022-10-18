@@ -1,4 +1,8 @@
-# final-project
+# Liberty Gem Bank
+
+Welcome to Liberty Gem Bank API!
+
+This is a REST API that runs on a local server. 
 
 <h2>Class Diagram</h2>
 
@@ -6,6 +10,7 @@
 
 <h2>Use Case Diagram</h2>
 
+![Use Case Diagram drawio](https://user-images.githubusercontent.com/108625085/196437182-24db0acf-618a-4645-9ae1-eb45dbd0b707.png)
 
 <h2>Requirements</h2>
 
