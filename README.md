@@ -2,7 +2,7 @@
 
 Welcome to Liberty Gem Bank API!
 
-This is a REST API that runs on a local server. 
+This is a REST API that runs on a local server created for my final project for the Java Web Development Course at Ironhack.
 
 <h2>Class Diagram</h2>
 
