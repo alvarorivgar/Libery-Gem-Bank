@@ -1,12 +1,10 @@
 package com.alvarorivas.finalproject.controller.accounts;
 
-import com.alvarorivas.finalproject.model.accounts.CreditCard;
 import com.alvarorivas.finalproject.model.accounts.Savings;
 import com.alvarorivas.finalproject.model.users.AccountHolder;
 import com.alvarorivas.finalproject.model.util.Address;
 import com.alvarorivas.finalproject.model.util.Money;
 import com.alvarorivas.finalproject.model.util.Status;
-import com.alvarorivas.finalproject.repository.accounts.CreditCardRepository;
 import com.alvarorivas.finalproject.repository.accounts.SavingsRepository;
 import com.alvarorivas.finalproject.repository.users.AccountHolderRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,11 +1,7 @@
 package com.alvarorivas.finalproject.controller.users;
 
-import com.alvarorivas.finalproject.model.accounts.Checking;
 import com.alvarorivas.finalproject.model.users.AccountHolder;
 import com.alvarorivas.finalproject.model.util.Address;
-import com.alvarorivas.finalproject.model.util.Money;
-import com.alvarorivas.finalproject.model.util.Status;
-import com.alvarorivas.finalproject.repository.accounts.CheckingRepository;
 import com.alvarorivas.finalproject.repository.users.AccountHolderRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -17,15 +13,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 

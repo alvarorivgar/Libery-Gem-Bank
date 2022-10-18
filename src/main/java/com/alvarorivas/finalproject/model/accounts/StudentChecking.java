@@ -6,8 +6,6 @@ import com.alvarorivas.finalproject.model.util.Status;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "student_checking")

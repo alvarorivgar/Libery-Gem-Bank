@@ -1,6 +1,5 @@
 package com.alvarorivas.finalproject.controller.accounts;
 
-import com.alvarorivas.finalproject.model.accounts.Checking;
 import com.alvarorivas.finalproject.model.accounts.CreditCard;
 import com.alvarorivas.finalproject.model.users.AccountHolder;
 import com.alvarorivas.finalproject.model.util.Address;

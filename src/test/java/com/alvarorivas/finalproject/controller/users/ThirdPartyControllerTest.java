@@ -2,14 +2,12 @@ package com.alvarorivas.finalproject.controller.users;
 
 import com.alvarorivas.finalproject.model.accounts.Checking;
 import com.alvarorivas.finalproject.model.users.AccountHolder;
-import com.alvarorivas.finalproject.model.users.Admin;
 import com.alvarorivas.finalproject.model.users.ThirdParty;
 import com.alvarorivas.finalproject.model.util.Address;
 import com.alvarorivas.finalproject.model.util.Money;
 import com.alvarorivas.finalproject.model.util.Status;
 import com.alvarorivas.finalproject.repository.accounts.CheckingRepository;
 import com.alvarorivas.finalproject.repository.users.AccountHolderRepository;
-import com.alvarorivas.finalproject.repository.users.AdminRepository;
 import com.alvarorivas.finalproject.repository.users.ThirdPartyRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -25,7 +23,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.math.BigDecimal;
