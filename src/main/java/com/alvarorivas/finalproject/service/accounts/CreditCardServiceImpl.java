@@ -5,6 +5,7 @@ import com.alvarorivas.finalproject.model.util.Money;
 import com.alvarorivas.finalproject.repository.accounts.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -29,17 +30,20 @@ public class CreditCardServiceImpl implements CreditCardService{
     CreditCardRepository creditCardRepository;
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Optional<CreditCard> findById(Integer accountId) {
         return creditCardRepository.findById(accountId);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public CreditCard createAccount(CreditCard creditCard) {
 
         return creditCardRepository.save(creditCard);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public CreditCard updateBalance(Integer id, Money balance) {
 
         Optional<CreditCard> storedCard = creditCardRepository.findById(id);
@@ -55,6 +59,7 @@ public class CreditCardServiceImpl implements CreditCardService{
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public CreditCard updateAccount(Integer id, CreditCard creditCard) {
 
         Optional<CreditCard> storedCard = creditCardRepository.findById(id);
@@ -79,6 +84,7 @@ public class CreditCardServiceImpl implements CreditCardService{
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteAccount(Integer id) {
 
         Optional<CreditCard> storedCard = creditCardRepository.findById(id);
@@ -117,6 +123,7 @@ public class CreditCardServiceImpl implements CreditCardService{
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN', 'ACCOUNT_HOLDER')")
     public Money checkBalance(Integer id) {
 
         Optional<CreditCard> storedCard = creditCardRepository.findById(id);
@@ -134,6 +141,7 @@ public class CreditCardServiceImpl implements CreditCardService{
     }
 
     @Override
+    @PreAuthorize("hasRole('ACCOUNT_HOLDER')")
     public void transferMoney(Integer originId, String receiverName, Integer receiverId, String accountType, Money amount) {
 
         Optional<CreditCard> originAccount = creditCardRepository.findById(originId);

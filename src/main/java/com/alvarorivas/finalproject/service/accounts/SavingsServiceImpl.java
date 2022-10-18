@@ -5,6 +5,7 @@ import com.alvarorivas.finalproject.model.util.Money;
 import com.alvarorivas.finalproject.repository.accounts.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -28,17 +29,20 @@ public class SavingsServiceImpl implements SavingsService{
     CreditCardRepository creditCardRepository;
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Optional<Savings> findById(Integer id) {
         return savingsRepository.findById(id);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Savings createAccount(Savings savings) {
 
         return savingsRepository.save(savings);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Savings updateBalance(Integer id, Money balance) {
 
         Optional<Savings> storedSavings = savingsRepository.findById(id);
@@ -53,6 +57,7 @@ public class SavingsServiceImpl implements SavingsService{
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Savings updateAccount(Integer id, Savings savings) {
 
         Optional<Savings> storedSavings = savingsRepository.findById(id);
@@ -80,6 +85,7 @@ public class SavingsServiceImpl implements SavingsService{
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteAccount(Integer id) {
 
         Optional<Savings> storedSavings = savingsRepository.findById(id);
@@ -144,6 +150,7 @@ public class SavingsServiceImpl implements SavingsService{
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN', 'ACCOUNT_HOLDER')")
     public Money checkBalance(Integer id) {
 
         Optional<Savings> storedSavings = savingsRepository.findById(id);
@@ -162,6 +169,7 @@ public class SavingsServiceImpl implements SavingsService{
     }
 
     @Override
+    @PreAuthorize("hasRole('ACCOUNT_HOLDER')")
     public void transferMoney(Integer originId, String receiverName, Integer receiverId, String accountType, Money amount) {
 
         Optional<Savings> originAccount = savingsRepository.findById(originId);

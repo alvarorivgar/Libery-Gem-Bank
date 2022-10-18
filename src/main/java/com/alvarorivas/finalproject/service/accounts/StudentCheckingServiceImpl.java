@@ -5,6 +5,7 @@ import com.alvarorivas.finalproject.model.util.Money;
 import com.alvarorivas.finalproject.repository.accounts.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -27,6 +28,7 @@ public class StudentCheckingServiceImpl implements StudentCheckingService{
 
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Optional<StudentChecking> findById(Integer id) {
 
         return studentCheckingRepository.findById(id);
@@ -49,6 +51,7 @@ public class StudentCheckingServiceImpl implements StudentCheckingService{
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public StudentChecking updateBalance(Integer id, Money balance) {
 
         Optional<StudentChecking> storedStudentChecking = studentCheckingRepository.findById(id);
@@ -64,6 +67,7 @@ public class StudentCheckingServiceImpl implements StudentCheckingService{
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public StudentChecking updateAccount(Integer id, StudentChecking studentChecking) {
 
         Optional<StudentChecking> storedStudentChecking = studentCheckingRepository.findById(id);
@@ -86,6 +90,7 @@ public class StudentCheckingServiceImpl implements StudentCheckingService{
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteAccount(Integer id) {
 
         Optional<StudentChecking> storedStudentChecking = studentCheckingRepository.findById(id);
@@ -100,6 +105,7 @@ public class StudentCheckingServiceImpl implements StudentCheckingService{
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN', 'ACCOUNT_HOLDER')")
     public Money checkBalance(Integer id) {
 
         Optional<StudentChecking> storedStudentChecking = studentCheckingRepository.findById(id);
@@ -114,6 +120,7 @@ public class StudentCheckingServiceImpl implements StudentCheckingService{
     }
 
     @Override
+    @PreAuthorize("hasRole('ACCOUNT_HOLDER')")
     public void transferMoney(Integer originId, String receiverName, Integer receiverId, String accountType, Money amount) {
 
         Optional<StudentChecking> originAccount = studentCheckingRepository.findById(originId);

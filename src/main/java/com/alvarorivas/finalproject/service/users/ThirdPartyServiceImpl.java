@@ -13,6 +13,7 @@ import com.alvarorivas.finalproject.repository.accounts.StudentCheckingRepositor
 import com.alvarorivas.finalproject.repository.users.ThirdPartyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -38,17 +39,20 @@ public class ThirdPartyServiceImpl implements ThirdPartyService{
 
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Optional<ThirdParty> findById(Integer id) {
         return thirdPartyRepository.findById(id);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ThirdParty createThirdParty(ThirdParty thirdParty) {
 
         return thirdPartyRepository.save(thirdParty);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public ThirdParty updateThirdParty(Integer id, ThirdParty thirdParty) {
 
         Optional<ThirdParty> storedThirdParty = thirdPartyRepository.findById(id);
@@ -65,6 +69,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService{
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteThirdParty(Integer id) {
 
         Optional<ThirdParty> storedThirdParty = thirdPartyRepository.findById(id);
@@ -77,6 +82,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService{
     }
 
     @Override
+    @PreAuthorize("hasRole('THIRD_PARTY')")
     public void sendMoney(String hashedKey, Integer receiverId, String secretKey, String accountType, Money amount) {
 
         Optional<ThirdParty> thirdParty = thirdPartyRepository.findByHashedKey(hashedKey);
@@ -139,6 +145,7 @@ public class ThirdPartyServiceImpl implements ThirdPartyService{
     }
 
     @Override
+    @PreAuthorize("hasRole('THIRD_PARTY')")
     public void receiveMoney(String hashedKey, Integer receiverId, String secretKey, String accountType, Money amount) {
 
         Optional<ThirdParty> thirdParty = thirdPartyRepository.findByHashedKey(hashedKey);

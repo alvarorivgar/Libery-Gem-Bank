@@ -5,6 +5,7 @@ import com.alvarorivas.finalproject.repository.security.UserRepository;
 import com.alvarorivas.finalproject.repository.users.AdminRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -18,17 +19,20 @@ public class AdminServiceImpl implements AdminService{
 
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Optional<Admin> findById(Integer id) {
         return adminRepository.findById(id);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Admin createAdmin(Admin admin) {
 
         return adminRepository.save(admin);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Admin updateAdmin(Integer id, Admin admin) {
 
         Optional<Admin> storedAdmin = adminRepository.findById(id);
@@ -43,6 +47,7 @@ public class AdminServiceImpl implements AdminService{
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteAdmin(Integer id) {
 
         Optional<Admin> storedAdmin = adminRepository.findById(id);

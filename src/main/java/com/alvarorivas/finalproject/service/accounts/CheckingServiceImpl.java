@@ -2,16 +2,16 @@ package com.alvarorivas.finalproject.service.accounts;
 
 import com.alvarorivas.finalproject.model.accounts.*;
 import com.alvarorivas.finalproject.model.util.Money;
-import com.alvarorivas.finalproject.repository.accounts.*;
-import com.google.gson.Gson;
+import com.alvarorivas.finalproject.repository.accounts.CheckingRepository;
+import com.alvarorivas.finalproject.repository.accounts.CreditCardRepository;
+import com.alvarorivas.finalproject.repository.accounts.SavingsRepository;
+import com.alvarorivas.finalproject.repository.accounts.StudentCheckingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.annotation.security.RolesAllowed;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -35,12 +35,14 @@ public class CheckingServiceImpl implements CheckingService{
 
 
    @Override
+   @PreAuthorize("hasRole('ADMIN')")
    public Optional<Checking> findById(Integer id) {
 
        return checkingRepository.findById(id);
    }
 
    @Override
+   @PreAuthorize("hasRole('ADMIN')")
    public Account createAccount(Checking checking) {
 
        //If account owner is less than 24 years old, create a student checking account
@@ -54,6 +56,7 @@ public class CheckingServiceImpl implements CheckingService{
    }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Checking updateBalance(Integer id, Money balance) {
 
         Optional<Checking> storedChecking = checkingRepository.findById(id);
@@ -68,6 +71,7 @@ public class CheckingServiceImpl implements CheckingService{
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
    public Checking updateAccount(Integer id, Checking checking) {
 
         Optional<Checking> storedChecking = checkingRepository.findById(id);
@@ -93,6 +97,7 @@ public class CheckingServiceImpl implements CheckingService{
    }
 
    @Override
+   @PreAuthorize("hasRole('ADMIN')")
    public void deleteAccount(Integer id) {
 
        Optional<Checking> storedChecking = checkingRepository.findById(id);
@@ -149,6 +154,7 @@ public class CheckingServiceImpl implements CheckingService{
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN', 'ACCOUNT_HOLDER')")
     public Money checkBalance(Integer id) {
 
         Optional<Checking> storedChecking = checkingRepository.findById(id);
@@ -168,6 +174,7 @@ public class CheckingServiceImpl implements CheckingService{
     }
 
     @Override
+    @PreAuthorize("hasRole('ACCOUNT_HOLDER')")
     public void transferMoney(Integer originId, String receiverName, Integer receiverId, String accountType, Money amount) {
 
        Optional<Checking> originAccount = checkingRepository.findById(originId);
