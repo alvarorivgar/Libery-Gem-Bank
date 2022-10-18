@@ -1,9 +1,7 @@
 package com.alvarorivas.finalproject.service.users;
 
-import com.alvarorivas.finalproject.model.accounts.Account;
 import com.alvarorivas.finalproject.model.users.AccountHolder;
 
-import java.util.List;
 import java.util.Optional;
 
 public interface AccountHolderService {
