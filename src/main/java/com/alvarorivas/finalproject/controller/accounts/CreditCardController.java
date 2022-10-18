@@ -60,8 +60,8 @@ public class CreditCardController {
     @PutMapping("/credit-card/{id}/transfer")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void transferMoney(@PathVariable(value = "id") Integer originId, @RequestParam String receiverName, @RequestParam @Valid Integer receiverId,
-                              @RequestBody Money amount){
+                              @RequestParam String accountType, @RequestBody Money amount){
 
-        creditCardService.transferMoney(originId, receiverName, receiverId, amount);
+        creditCardService.transferMoney(originId, receiverName, receiverId, accountType, amount);
     }
 }

@@ -15,9 +15,7 @@ public interface ThirdPartyService {
 
     void deleteThirdParty(Integer id);
 
-    public Integer accountTypeChecker(Integer id);
+    void sendMoney(String hashedKey, Integer receiverId, String secretKey, String accountType, Money amount);
 
-    void sendMoney(String hashedKey, Integer receiverId, String secretKey, Money amount);
-
-    void receiveMoney(String hashedKey, Integer receiverId, String secretKey, Money amount);
+    void receiveMoney(String hashedKey, Integer receiverId, String secretKey, String accountType, Money amount);
 }

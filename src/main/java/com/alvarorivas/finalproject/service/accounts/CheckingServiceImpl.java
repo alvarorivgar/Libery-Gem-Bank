@@ -2,10 +2,13 @@ package com.alvarorivas.finalproject.service.accounts;
 
 import com.alvarorivas.finalproject.model.accounts.*;
 import com.alvarorivas.finalproject.model.util.Money;
-import com.alvarorivas.finalproject.repository.accounts.*;
-import com.google.gson.Gson;
+import com.alvarorivas.finalproject.repository.accounts.CheckingRepository;
+import com.alvarorivas.finalproject.repository.accounts.CreditCardRepository;
+import com.alvarorivas.finalproject.repository.accounts.SavingsRepository;
+import com.alvarorivas.finalproject.repository.accounts.StudentCheckingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -32,12 +35,14 @@ public class CheckingServiceImpl implements CheckingService{
 
 
    @Override
+   @PreAuthorize("hasRole('ADMIN')")
    public Optional<Checking> findById(Integer id) {
 
        return checkingRepository.findById(id);
    }
 
    @Override
+   @PreAuthorize("hasRole('ADMIN')")
    public Account createAccount(Checking checking) {
 
        //If account owner is less than 24 years old, create a student checking account
@@ -51,6 +56,7 @@ public class CheckingServiceImpl implements CheckingService{
    }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Checking updateBalance(Integer id, Money balance) {
 
         Optional<Checking> storedChecking = checkingRepository.findById(id);
@@ -65,6 +71,7 @@ public class CheckingServiceImpl implements CheckingService{
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
    public Checking updateAccount(Integer id, Checking checking) {
 
         Optional<Checking> storedChecking = checkingRepository.findById(id);
@@ -90,6 +97,7 @@ public class CheckingServiceImpl implements CheckingService{
    }
 
    @Override
+   @PreAuthorize("hasRole('ADMIN')")
    public void deleteAccount(Integer id) {
 
        Optional<Checking> storedChecking = checkingRepository.findById(id);
@@ -132,11 +140,11 @@ public class CheckingServiceImpl implements CheckingService{
         Optional<Checking> storedChecking = checkingRepository.findById(id);
 
         if (storedChecking.isPresent()) {
-            while(LocalDate.now().isAfter(storedChecking.get().getLastPenaltyFeeCheck().plusMonths(1))){
+            while(LocalDate.now().isAfter(storedChecking.get().getLastMaintenanceFeeApplication().plusMonths(1))){
                 //Adds 1 month to last maintenance fee application
                 storedChecking.get().setLastMaintenanceFeeApplication(storedChecking.get().getLastMaintenanceFeeApplication().plusMonths(1));
                 //Subtracts maintenance fee to balance
-                storedChecking.get().setBalance(new Money(storedChecking.get().getBalance().decreaseAmount(storedChecking.get().getMonthlyMaintenanceFee().getAmount())));
+                storedChecking.get().setBalance(new Money(storedChecking.get().getBalance().decreaseAmount(storedChecking.get().getMonthlyMaintenanceFee())));
 
                 checkingRepository.save(storedChecking.get());
             }
@@ -146,13 +154,12 @@ public class CheckingServiceImpl implements CheckingService{
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN', 'ACCOUNT_HOLDER')")
     public Money checkBalance(Integer id) {
 
         Optional<Checking> storedChecking = checkingRepository.findById(id);
 
         if (storedChecking.isPresent()) {
-
-            if(id.equals(storedChecking.get().getPrimaryOwner()))
 
             //Applies monthly maintenance fee and penalty fee if applicable to update balance
             applyPenaltyFee(id);
@@ -166,40 +173,14 @@ public class CheckingServiceImpl implements CheckingService{
         }
     }
 
-    public Integer accountTypeChecker(Integer id) {
-
-        Optional<Checking> checking = checkingRepository.findById(id);
-        Optional<CreditCard> creditCard = creditCardRepository.findById(id);
-        Optional<Savings> savings = savingsRepository.findById(id);
-        Optional<StudentChecking> studentChecking = studentCheckingRepository.findById(id);
-
-        if (checking.isPresent()) {
-            return 1;
-        } else if (creditCard.isPresent()) {
-            return 2;
-        } else if (savings.isPresent()) {
-            return 3;
-        } else if (studentChecking.isPresent()) {
-            return 4;
-        }else {
-            return null;
-        }
-    }
-
     @Override
-    public void transferMoney(Integer originId, String receiverName, Integer receiverId, Money amount) {
+    @PreAuthorize("hasRole('ACCOUNT_HOLDER')")
+    public void transferMoney(Integer originId, String receiverName, Integer receiverId, String accountType, Money amount) {
 
        Optional<Checking> originAccount = checkingRepository.findById(originId);
 
-       Integer receiverAccount = accountTypeChecker(receiverId);
-
-
        if(!originAccount.isPresent()){
            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Origin account not found");}
-
-       if(receiverAccount == null){
-           throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");
-       }
 
        //Check if balance is updated
        applyPenaltyFee(originId);
@@ -210,30 +191,47 @@ public class CheckingServiceImpl implements CheckingService{
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient funds");
         }
 
-
+        //Decrease balance of origin account
         originAccount.get().getBalance().decreaseAmount(amount);
         checkingRepository.save(originAccount.get());
 
-        switch (receiverAccount) {
-            case 1 -> {
-                           Checking receiverChecking = checkingRepository.findById(receiverId).get();
-                           receiverChecking.getBalance().increaseAmount(amount);
-                           checkingRepository.save(receiverChecking);
+        //Check account type and increase balance of receiver account
+        switch (accountType) {
+            case "checking" -> {
+                Optional<Checking> receiverChecking = checkingRepository.findById(receiverId);
+
+                if(!receiverChecking.isPresent()){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");}
+
+                receiverChecking.get().getBalance().increaseAmount(amount);
+                checkingRepository.save(receiverChecking.get());
             }
-            case 2 -> {
-                           CreditCard receiverCard = creditCardRepository.findById(receiverId).get();
-                           receiverCard.getBalance().increaseAmount(amount);
-                           creditCardRepository.save(receiverCard);
+            case "creditcard" -> {
+                Optional<CreditCard> receiverCard = creditCardRepository.findById(receiverId);
+
+                if(!receiverCard.isPresent()){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");}
+
+                receiverCard.get().getBalance().increaseAmount(amount);
+                creditCardRepository.save(receiverCard.get());
             }
-            case 3 -> {
-                           Savings receiverSavings = savingsRepository.findById(receiverId).get();
-                           receiverSavings.getBalance().increaseAmount(amount);
-                           savingsRepository.save(receiverSavings);
+            case "savings" -> {
+                Optional<Savings> receiverSavings = savingsRepository.findById(receiverId);
+
+                if(!receiverSavings.isPresent()){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");}
+
+                receiverSavings.get().getBalance().increaseAmount(amount);
+                savingsRepository.save(receiverSavings.get());
             }
-            case 4 -> {
-                           StudentChecking receiverStudent = studentCheckingRepository.findById(receiverId).get();
-                           receiverStudent.getBalance().increaseAmount(amount);
-                           studentCheckingRepository.save(receiverStudent);
+            case "studentchecking" -> {
+                Optional<StudentChecking> receiverStudent = studentCheckingRepository.findById(receiverId);
+
+                if(!receiverStudent.isPresent()){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");}
+
+                receiverStudent.get().getBalance().increaseAmount(amount);
+                studentCheckingRepository.save(receiverStudent.get());
             }
         }
     }

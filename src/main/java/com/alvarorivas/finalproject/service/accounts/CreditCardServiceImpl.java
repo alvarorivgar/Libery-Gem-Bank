@@ -5,10 +5,12 @@ import com.alvarorivas.finalproject.model.util.Money;
 import com.alvarorivas.finalproject.repository.accounts.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -28,17 +30,20 @@ public class CreditCardServiceImpl implements CreditCardService{
     CreditCardRepository creditCardRepository;
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Optional<CreditCard> findById(Integer accountId) {
         return creditCardRepository.findById(accountId);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public CreditCard createAccount(CreditCard creditCard) {
 
         return creditCardRepository.save(creditCard);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public CreditCard updateBalance(Integer id, Money balance) {
 
         Optional<CreditCard> storedCard = creditCardRepository.findById(id);
@@ -54,6 +59,7 @@ public class CreditCardServiceImpl implements CreditCardService{
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public CreditCard updateAccount(Integer id, CreditCard creditCard) {
 
         Optional<CreditCard> storedCard = creditCardRepository.findById(id);
@@ -78,6 +84,7 @@ public class CreditCardServiceImpl implements CreditCardService{
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteAccount(Integer id) {
 
         Optional<CreditCard> storedCard = creditCardRepository.findById(id);
@@ -103,7 +110,7 @@ public class CreditCardServiceImpl implements CreditCardService{
                 //Adds interest to balance
                 Money currentBalance = storedCard.get().getBalance();
                 BigDecimal interestRate = storedCard.get().getInterestRate();
-                BigDecimal monthlyInterest = currentBalance.getAmount().multiply(interestRate.divide(new BigDecimal(12)));
+                BigDecimal monthlyInterest = currentBalance.getAmount().multiply(interestRate).divide(new BigDecimal(12), 2, RoundingMode.HALF_UP);
 
                 storedCard.get().setBalance(new Money(currentBalance.increaseAmount(monthlyInterest)));
 
@@ -116,6 +123,7 @@ public class CreditCardServiceImpl implements CreditCardService{
     }
 
     @Override
+    @PreAuthorize("hasAnyRole('ADMIN', 'ACCOUNT_HOLDER')")
     public Money checkBalance(Integer id) {
 
         Optional<CreditCard> storedCard = creditCardRepository.findById(id);
@@ -132,40 +140,14 @@ public class CreditCardServiceImpl implements CreditCardService{
         }
     }
 
-    public Integer accountTypeChecker(Integer id) {
-
-        Optional<Checking> checking = checkingRepository.findById(id);
-        Optional<CreditCard> creditCard = creditCardRepository.findById(id);
-        Optional<Savings> savings = savingsRepository.findById(id);
-        Optional<StudentChecking> studentChecking = studentCheckingRepository.findById(id);
-
-        if (checking.isPresent()) {
-            return 1;
-        } else if (creditCard.isPresent()) {
-            return 2;
-        } else if (savings.isPresent()) {
-            return 3;
-        } else if (studentChecking.isPresent()) {
-            return 4;
-        }else {
-            return null;
-        }
-    }
-
     @Override
-    public void transferMoney(Integer originId, String receiverName, Integer receiverId, Money amount) {
+    @PreAuthorize("hasRole('ACCOUNT_HOLDER')")
+    public void transferMoney(Integer originId, String receiverName, Integer receiverId, String accountType, Money amount) {
 
         Optional<CreditCard> originAccount = creditCardRepository.findById(originId);
 
-        Integer receiverAccount = accountTypeChecker(receiverId);
-
-
         if(!originAccount.isPresent()){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Origin account not found");}
-
-        if(receiverAccount == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");
-        }
 
         //Check if balance is updated
         applyInterest(originId);
@@ -176,30 +158,47 @@ public class CreditCardServiceImpl implements CreditCardService{
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Insufficient funds");
         }
 
-
+        //Decrease balance of origin account
         originAccount.get().getBalance().decreaseAmount(amount);
         creditCardRepository.save(originAccount.get());
 
-        switch (receiverAccount) {
-            case 1 -> {
-                Checking receiverChecking = checkingRepository.findById(receiverId).get();
-                receiverChecking.getBalance().increaseAmount(amount);
-                checkingRepository.save(receiverChecking);
+        //Check account type and increase balance of receiver account
+        switch (accountType) {
+            case "checking" -> {
+                Optional<Checking> receiverChecking = checkingRepository.findById(receiverId);
+
+                if(!receiverChecking.isPresent()){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");}
+
+                receiverChecking.get().getBalance().increaseAmount(amount);
+                checkingRepository.save(receiverChecking.get());
             }
-            case 2 -> {
-                CreditCard receiverCard = creditCardRepository.findById(receiverId).get();
-                receiverCard.getBalance().increaseAmount(amount);
-                creditCardRepository.save(receiverCard);
+            case "creditcard" -> {
+                Optional<CreditCard> receiverCard = creditCardRepository.findById(receiverId);
+
+                if(!receiverCard.isPresent()){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");}
+
+                receiverCard.get().getBalance().increaseAmount(amount);
+                creditCardRepository.save(receiverCard.get());
             }
-            case 3 -> {
-                Savings receiverSavings = savingsRepository.findById(receiverId).get();
-                receiverSavings.getBalance().increaseAmount(amount);
-                savingsRepository.save(receiverSavings);
+            case "savings" -> {
+                Optional<Savings> receiverSavings = savingsRepository.findById(receiverId);
+
+                if(!receiverSavings.isPresent()){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");}
+
+                receiverSavings.get().getBalance().increaseAmount(amount);
+                savingsRepository.save(receiverSavings.get());
             }
-            case 4 -> {
-                StudentChecking receiverStudent = studentCheckingRepository.findById(receiverId).get();
-                receiverStudent.getBalance().increaseAmount(amount);
-                studentCheckingRepository.save(receiverStudent);
+            case "studentchecking" -> {
+                Optional<StudentChecking> receiverStudent = studentCheckingRepository.findById(receiverId);
+
+                if(!receiverStudent.isPresent()){
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Receiver account not found");}
+
+                receiverStudent.get().getBalance().increaseAmount(amount);
+                studentCheckingRepository.save(receiverStudent.get());
             }
         }
     }
